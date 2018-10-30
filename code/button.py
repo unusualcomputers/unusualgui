@@ -12,7 +12,11 @@ class ButtonFilledStyle:
         (w,h)=font.size(text)
         inner=button.inner_rect
         if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"')
+            raise Exception(u'Box too small for button "'+text+'"'+\
+                u'required: '+str((w,h))+u' available: '+\
+                str((inner.width,inner.height)))
+            raise Exception(u'Box too small for button "'+text+'"'+\
+                u'required: '+(w,h)+u'available: '+(inner.width,inner.height))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,config.font_color,config.bckg_color)
         
@@ -44,7 +48,9 @@ class ButtonTextStyle:
         (w,h)=font.size(text)
         inner=button.inner_rect
         if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"')
+            raise Exception(u'Box too small for button "'+text+'"'+\
+                u'required: '+str((w,h))+u' available: '+\
+                str((inner.width,inner.height)))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,config.font_color,config.bckg_color)
         
@@ -52,7 +58,9 @@ class ButtonTextStyle:
         font.set_underline(True)
         (w,h)=font.size(text)
         if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"')
+            raise Exception(u'Box too small for button "'+text+'"'+\
+                u'required: '+str((w,h))+u' available: '+\
+                str((inner.width,inner.height)))
         self.clicked_pos=\
             (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.clicked_img=font.render(text,config.font_color,config.bckg_color)
@@ -60,7 +68,9 @@ class ButtonTextStyle:
         font=button.fonts.get_font(config.font_name,font_size,italic=True)
         (w,h)=font.size(text)
         if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"')
+            raise Exception(u'Box too small for button "'+text+'"'+\
+                u'required: '+str((w,h))+u' available: '+\
+                str((inner.width,inner.height)))
         self.focus_pos=\
             (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.focus_img=font.render(text,config.font_color,config.bckg_color)
@@ -124,7 +134,7 @@ class ButtonLinked:
 class Button(Widget):
     def __init__(self,
             text,
-            x,y,height,width,
+            x,y,width,height,
             clicked_func,
             unclicked_func=None,
             style=ButtonTextStyle,
@@ -136,7 +146,7 @@ class Button(Widget):
             border_radius=config.border_radius,
             border_thickness=config.border_thickness):
         
-        Widget.__init__(self,x,y,height,width,
+        Widget.__init__(self,x,y,width,height,
             border_type,border_color,border_fill_color,
             border_radius,border_thickness)
         
@@ -176,7 +186,7 @@ class Button(Widget):
         if (t is MouseDown) or (t is KeyDown and t.unicode==u' '): 
             self.behaviour.on_mouse_down()
             return True
-        elif (t is MouseUp) or (t is MouseClick) or (t is DoubleClick) or \
+        elif (t is MouseClick) or (t is MouseLongEnd) or \
                 (t is KeyUp and t.unicode==u' '):
             self.behaviour.on_mouse_up()
             return True
@@ -190,17 +200,17 @@ if __name__ == "__main__":
     def clicked_test(text): print text + u' clicked'
     def unclicked_test(text): print text + u' unclicked'
 
-    b1=Button(u'Button One',10,10,150,50,clicked_test,unclicked_test,
+    b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test,
         border_type=BorderType.NONE)
-    b2=Button(u'Button One',10,70,150,50,clicked_test,unclicked_test,
+    b2=Button(u'Button Two',10,70,150,40,clicked_test,unclicked_test,
         style=ButtonFilledStyle,
         border_type=BorderType.ROUNDED, border_radius=10)
-    b3=Button(u'Button One',10,130,150,50,clicked_test,unclicked_test,
+    b3=Button(u'Button Three',10,130,150,35,clicked_test,unclicked_test,
         style=ButtonFilledStyle,
         border_type=BorderType.SIMPLE,border_thickness=2)
-    b4=Button(u'Button One',10,190,150,50,clicked_test,unclicked_test,
+    b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
         style=ButtonFilledStyle,
-        border_type=BorderType.OPEN)
+        border_type=BorderType.OPEN,border_thickness=1)
             #text,
             #x,y,height,width,
             #clicked_func,

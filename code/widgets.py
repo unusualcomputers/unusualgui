@@ -45,7 +45,7 @@ class Widgets:
         if self.focus.contains(x,y): return self.focus
         
         for w in self.active:
-            if w.contains(x,y): 
+            if w.contains(x,y) and w.accepts_focus(): 
                 self.focus.unfocus()
                 self.focus=w
                 w.focus()

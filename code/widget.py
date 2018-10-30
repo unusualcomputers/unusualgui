@@ -1,10 +1,11 @@
 import pygame
 import gui_config as config
 from borders import *
+from fonts import *
 
 class Widget:
     def __init__(self,
-            x,y,height,width
+            x,y,width,height,
             border_type=config.border_type,
             border_color=config.border_color,
             border_fill_color=config.border_fill_color,
@@ -14,7 +15,7 @@ class Widget:
         self.y=y
         self.height=height
         self.width=width
-        self.rect=pygame.Rect(x,y,height,width)
+        self.rect=pygame.Rect(x,y,width,height)
         
         self.border_type=border_type
         self.border_color=border_color
@@ -22,30 +23,49 @@ class Widget:
         self.border_radius=border_radius
         self.border_thickness=border_thickness
         
-        self.padding=border_radius+border_thickness
-        self.inner_rect=self.rect.inflate(-self.padding,-self.padding)
+        self.padding=border_thickness
+        self.inner_rect=self.rect.inflate(-2*self.padding,-2*self.padding)
+        
         self.has_focus=False
+        self.needs_update=True
+        
+        self.borders=Borders()
+        self.fonts=Fonts()
 
     # True if this widget contains point (x,y)
     def contains(self,x,y):
         return self.rect.collidepoint(x,y)
-    
+   
+    # Does this widget accept focus?
+    def accepts_focus(self):
+        return True
+ 
     # Start receiving input
+    # Returns False if this widget can't recieve focus True otherwise
     def focus(self):
-        self.has_focus=True
+        if not self.acceps_focus(): return False
+        if not self.has_focus:
+            self.needs_update=True
+            self.has_focus=True
+        return True
 
     # Stop receiving input
+    # Returns False if this widget can't recieve focus True otherwise
     def unfocus(self):
-        self.has_focus=False
+        if not self.acceps_focus(): return False
+        if self.has_focus:
+            self.needs_update=True
+            self.has_focus=False
+        return True
 
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
-    def update(self,screen):
-        self._draw_border()
+    def update(self,surface):
+        self._draw_border(surface)
         return self.rect
     
-    def _draw_border(self,screen):
-        borders.draw(self.border_type,surface,self.rect,
+    def _draw_border(self,surface):
+        self.borders.draw(self.border_type,surface,self.rect,
             self.border_color,self.border_fill_color,
             self.border_radius,self.border_thickness)
     

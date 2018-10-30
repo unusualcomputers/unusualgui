@@ -5,7 +5,6 @@ class BorderType(Enum):
     SIMPLE=1
     OPEN=2
     ROUNDED=3
-    ROUNDED_FILLED=4
 
 class Borders:
     class __SingletonBorders: 
@@ -166,10 +165,11 @@ class Borders:
                 pg.draw.line(surface,color_border,
                     (right,top+radius),(right,bottom-radius),thickness)
             elif border_type == BorderType.ROUNDED:
-                self._bresenham_border(surface,rect,color_border,radius)
-            elif border_type == BorderType.ROUNDED_FILLED:
-                self._bresenham_filled(surface,rect,
-                    color_border,color_fill,radius)
+                if color_fill:
+                    self._bresenham_filled(surface,rect,
+                        color_border,color_fill,radius)
+                else:            
+                    self._bresenham_border(surface,rect,color_border,radius)
 
     __instance=None
     def __init__(self):
@@ -194,8 +194,7 @@ if __name__ == "__main__":
     b.draw(BorderType.SIMPLE,scr,(10,100,w,h),c,radius=d)
     b.draw(BorderType.OPEN,scr,(10,160,w,h),c,radius=d)
     b.draw(BorderType.ROUNDED,scr,(10,220,w,h),c,radius=d)
-    b.draw(BorderType.ROUNDED_FILLED,scr,(10,280,w,h),c,radius=d)
-    b.draw(BorderType.ROUNDED_FILLED,scr,(10,350,w,h),c,c2,radius=d)
+    b.draw(BorderType.ROUNDED,scr,(10,350,w,h),c,c2,radius=d)
     b.draw(BorderType.SIMPLE,scr,(10,420,w,h),c,c2,radius=d)
     pg.display.update()
     while pg.event.wait().type != pg.QUIT: pass
