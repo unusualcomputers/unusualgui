@@ -1,6 +1,10 @@
+import init
 from widget import Widget
+from singleton import Singleton
+from events import *
 
 class Widgets:
+    __metaclass__ = Singleton
     def __init__(self):
         self.widgets={}
         self.active=None
@@ -31,7 +35,14 @@ class Widgets:
             w.draw(surface)
      
     def handle(self,event):
-        return self.get_focus().handle(event)
+        if type(event)==type(Message):
+            if len(event.receivers)==0:
+                self.broadcast(event)
+            else:
+                for w in event.receivers:
+                    w.handle(event)
+        else: 
+            return self.get_focus().handle(event)
  
     def broadcast(self,message):
         for w in self.active:
@@ -60,3 +71,4 @@ class Widgets:
                 self.focus=w
                 return
         raise Exception('Widget not found')
+

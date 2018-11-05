@@ -1,12 +1,19 @@
 from enum import Enum
 
+# quit showing up in the event queue stops the application
+# more general than pygame quit, can be put there by buttons for example
+class Quit:
+    def __init__(self):
+        pass
+
 # message is an event broadcast to all listeners 
 # (all active windows or listener fnctions)
 class Message:
-    def __init__(self, sender, message, params=None):
+    def __init__(self, sender, message, params=None, receivers=[]):
         self.sender=sender
         self.message=message
         self.params=params
+        self.receivers=receivers
 
 # ... all other messages are sent to widgets with focus only
 
@@ -76,15 +83,21 @@ class Scroll:
 
 # Keyboard event use pygame keys names
 # https://www.pygame.org/docs/ref/key.html
-
+# If a key is down for longer then key_repeat_start, start sending KeyUp every
+# key_repeat milliseconds
+# NOTE: this means that not every KeyUp is preceded by KeyDown
+key_repeat_start=1000
+key_repeat=500
 class KeyDown:
-    def __init__(self,key,uni_code):
+    def __init__(self,key,uni_code,mod):
         self.key=key
         self.unicode=uni_code
+        self.mod=mod
 
 
 class KeyUp:
-    def __init__(self,key,uni_code):
+    def __init__(self,key,uni_code,mod):
         self.key=key
         self.unicode=uni_code
+        self.mod=mod
 

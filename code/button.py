@@ -1,5 +1,6 @@
 import pygame
-import gui_config as config
+import init
+from gui_config import Config
 from borders import *
 from events import *
 from widget import Widget
@@ -8,7 +9,7 @@ from widget import Widget
 class ButtonFilledStyle:
     def __init__(self,button,text,font_size):
         self.button=button
-        font=button.fonts.get_font(config.font_name,font_size)
+        font=button.fonts.get_font(Config.font_name,font_size)
         (w,h)=font.size(text)
         inner=button.inner_rect
         if w > inner.width or h > inner.height:
@@ -18,7 +19,7 @@ class ButtonFilledStyle:
             raise Exception(u'Box too small for button "'+text+'"'+\
                 u'required: '+(w,h)+u'available: '+(inner.width,inner.height))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.img=font.render(text,config.font_color,config.bckg_color)
+        self.img=font.render(text,Config.font_color,Config.bckg_color)
         
     def _draw_clicked(self,surface):
         b=self.button
@@ -31,7 +32,7 @@ class ButtonFilledStyle:
         b=self.button
         if b.has_focus:
             b.borders.draw(b.border_type,surface,b.rect,
-                config.sel_color,None,
+                Config.sel_color,None,
                 b.border_radius,b.border_thickness)
         else: 
             b.borders.draw(b.border_type,surface,b.rect,
@@ -44,7 +45,7 @@ class ButtonTextStyle:
     def __init__(self,button,text,font_size):
         self.button=button
         
-        font=button.fonts.get_font(config.font_name,font_size)
+        font=button.fonts.get_font(Config.font_name,font_size)
         (w,h)=font.size(text)
         inner=button.inner_rect
         if w > inner.width or h > inner.height:
@@ -52,9 +53,9 @@ class ButtonTextStyle:
                 u'required: '+str((w,h))+u' available: '+\
                 str((inner.width,inner.height)))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.img=font.render(text,config.font_color,config.bckg_color)
+        self.img=font.render(text,Config.font_color,Config.bckg_color)
         
-        font=button.fonts.get_font(config.font_name,font_size,bold=True)
+        font=button.fonts.get_font(Config.font_name,font_size,bold=True)
         font.set_underline(True)
         (w,h)=font.size(text)
         if w > inner.width or h > inner.height:
@@ -63,9 +64,9 @@ class ButtonTextStyle:
                 str((inner.width,inner.height)))
         self.clicked_pos=\
             (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.clicked_img=font.render(text,config.font_color,config.bckg_color)
+        self.clicked_img=font.render(text,Config.font_color,Config.bckg_color)
     
-        font=button.fonts.get_font(config.font_name,font_size,italic=True)
+        font=button.fonts.get_font(Config.font_name,font_size,italic=True)
         (w,h)=font.size(text)
         if w > inner.width or h > inner.height:
             raise Exception(u'Box too small for button "'+text+'"'+\
@@ -73,7 +74,7 @@ class ButtonTextStyle:
                 str((inner.width,inner.height)))
         self.focus_pos=\
             (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.focus_img=font.render(text,config.font_color,config.bckg_color)
+        self.focus_img=font.render(text,Config.font_color,Config.bckg_color)
     
     def _draw_clicked(self,surface):
         b=self.button
@@ -139,12 +140,12 @@ class Button(Widget):
             unclicked_func=None,
             style=ButtonTextStyle,
             behaviour=ButtonClick,
-            font_size=config.font_size,
-            border_type=config.border_type,
-            border_color=config.border_color,
-            border_fill_color=config.border_fill_color,
-            border_radius=config.border_radius,
-            border_thickness=config.border_thickness):
+            font_size=Config.font_size,
+            border_type=Config.border_type,
+            border_color=Config.border_color,
+            border_fill_color=Config.border_fill_color,
+            border_radius=Config.border_radius,
+            border_thickness=Config.border_thickness):
         
         Widget.__init__(self,x,y,width,height,
             border_type,border_color,border_fill_color,
@@ -196,7 +197,7 @@ class Button(Widget):
 if __name__ == "__main__":
     pygame.init()
     scr = pygame.display.set_mode((300,600))
-    scr.fill(config.bckg_color)
+    scr.fill(Config.bckg_color)
     def clicked_test(text): print text + u' clicked'
     def unclicked_test(text): print text + u' unclicked'
 
@@ -217,12 +218,12 @@ if __name__ == "__main__":
             #unclicked_func=None,
             #style=ButtonTextStyle,
             #behaviour=ButtonClick,
-            #font_size=config.font_size,
-            #border_type=config.border_type,
-            #border_color=config.border_color,
-            #border_fill_color=config.border_fill_color,
-            #border_radius=config.border_radius,
-            #border_thickness=config.border_thickness):
+            #font_size=Config.font_size,
+            #border_type=Config.border_type,
+            #border_color=Config.border_color,
+            #border_fill_color=Config.border_fill_color,
+            #border_radius=Config.border_radius,
+            #border_thickness=Config.border_thickness):
     b1.draw(scr)
     b2.draw(scr)
     b3.draw(scr)

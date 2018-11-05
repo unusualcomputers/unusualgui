@@ -1,5 +1,5 @@
 import pygame
-import gui_config as config
+from gui_config import Config
 from borders import *
 from widget import Widget
 from fonts import *
@@ -10,15 +10,15 @@ class Label(Widget):
             x,y,
             width=None,
             height=None,
-            font_size=config.font_size):
+            font_size=Config.font_size):
         
         fonts=Fonts()
-        font=fonts.get_font(config.font_name,font_size)
+        font=fonts.get_font(Config.font_name,font_size)
         (w,h)=font.size(text)
         if width is None:
-            width=w+2*config.border_thickness
+            width=w+2*Config.border_thickness
         if height is None:
-            height=h+2*config.border_thickness
+            height=h+2*Config.border_thickness
     
         Widget.__init__(self,x,y,width,height,
             BorderType.NONE,border_radius=0)
@@ -28,7 +28,7 @@ class Label(Widget):
                 u'required: '+str((w,h))+u' available: '+\
                 str((inner.width,inner.height)))
         self.pos=(inner.x,inner.bottom-h) 
-        self.img=font.render(text,config.font_color,config.bckg_color)
+        self.img=font.render(text,Config.font_color,Config.bckg_color)
 
     # Does this widget accept focus?
     def accepts_focus(self):
@@ -48,7 +48,7 @@ class Label(Widget):
 if __name__ == "__main__":
     pygame.init()
     scr = pygame.display.set_mode((300,600))
-    scr.fill(config.bckg_color)
+    scr.fill(Config.bckg_color)
     l1=Label(u'Label One',10,10,150,50)
     l2=Label(u'Label Two',10,70)
     l1.draw(scr)

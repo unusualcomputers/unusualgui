@@ -1,16 +1,17 @@
 import pygame
-import gui_config as config
+import init
+from gui_config import Config
 from borders import *
 from fonts import *
 
 class Widget:
     def __init__(self,
             x,y,width,height,
-            border_type=config.border_type,
-            border_color=config.border_color,
-            border_fill_color=config.border_fill_color,
-            border_radius=config.border_radius,
-            border_thickness=config.border_thickness):
+            border_type=Config.border_type,
+            border_color=Config.border_color,
+            border_fill_color=Config.border_fill_color,
+            border_radius=Config.border_radius,
+            border_thickness=Config.border_thickness):
         self.x=x
         self.y=y
         self.height=height
@@ -72,7 +73,7 @@ class Widget:
     def draw(self,screen):
         self.update(screen)
 
-    def undraw(self,screen,bckg_color=config.bckg_color):
+    def undraw(self,screen,bckg_color=Config.bckg_color):
         screen.fill(bckg_color,self.rect)
 
     # Handle event, return True if handled

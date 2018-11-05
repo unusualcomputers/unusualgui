@@ -1,4 +1,6 @@
 import pygame
+import init
+from singleton import Singleton
 
 class _FontWithCache:
     def __init__(self,font):
@@ -20,25 +22,16 @@ class _FontWithCache:
         return getattr(self.font,name)
 
 class Fonts:
-    class __SingletonFonts: 
-        def __init__(self):
-            self.__fonts_cache={}
-
-        def get_font(self,font_name, size, bold=False, italic=False):
-            key=(font_name,size,bold,italic)
-            font=self.__fonts_cache.get(key, None)
-            if font==None:
-                font=_FontWithCache(
-                    pygame.font.SysFont(font_name,size,bold,italic))
-                self.__fonts_cache[key]=font
-            return font
-
-    
-    __instance=None
+    __metaclass__=Singleton
     def __init__(self):
-        if not Fonts.__instance:
-            Fonts.__instance=Fonts.__SingletonFonts()
-            
-    def __getattr__(self,name):
-        return getattr(self.__instance,name)
+        self.__fonts_cache={}
+
+    def get_font(self,font_name, size, bold=False, italic=False):
+        key=(font_name,size,bold,italic)
+        font=self.__fonts_cache.get(key, None)
+        if font==None:
+            font=_FontWithCache(
+                pygame.font.SysFont(font_name,size,bold,italic))
+            self.__fonts_cache[key]=font
+        return font
 
