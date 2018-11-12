@@ -1,24 +1,39 @@
 from __future__ import unicode_literals
 import logging
 import sys
-loggers={}
+from singleton import Singleton
+
+root='UnusualGUI'
+level=logging.DEBUG
+filename=None
 logfrmt='%(levelname)s - %(asctime)s:%(msecs)d - %(name)s: %(message)s'
-formatter=logging.Formatter(logfrmt,'%H:%M:%S')
-lvl=logging.DEBUG
-console = logging.StreamHandler(sys.stdout)
-console.setLevel(lvl)
-console.setFormatter(formatter)
-rootLog='SpaceWindow'
-#filelogger=logging.FileHandler(FILENAMEHERE)
-#filelogger.setFormatter(formatter)
+
+class Logger:
+    __metaclass__=Singleton
+    
+    def __init__(self):
+        self.loggers={}
+        formatter=logging.Formatter(logfrmt,'%H:%M:%S')
+        self.console = logging.StreamHandler(sys.stdout)
+        self.console.setLevel(level)
+        self.console.setFormatter(formatter)
+        if filename is not None:
+            self.filelogger=logging.FileHandler(FILENAMEHERE)
+            self.filelogger.setFormatter(formatter)
+    
+    def get(self,subname):
+        name='%s.%s' %(root,subname)
+        if name in self.loggers: return self.loggers[name]
+        l=logging.getLogger(name)
+        l.handlers = []
+        l.addHandler(self.console) 
+        if filename is not None:
+            l.addHandler(filelogger)
+        l.setLevel(level)
+        self.loggers[name]=l
+        return l
+
+logger=Logger()
+
 def get(subname):
-    global loggers
-    name='%s.%s' %(rootLog,subname)
-    if name in loggers: return loggers[name]
-    l=logging.getLogger(name)
-    l.handlers = []
-    l.addHandler(console) 
-    #l.addHandler(filelogger)
-    l.setLevel(lvl)
-    loggers[name]=l
-    return l
+    return logger.get(subname)    

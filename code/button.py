@@ -195,7 +195,6 @@ class Button(Widget):
             return False
 
 if __name__ == "__main__":
-    pygame.init()
     scr = pygame.display.set_mode((300,600))
     scr.fill(Config.bckg_color)
     def clicked_test(text): print text + u' clicked'

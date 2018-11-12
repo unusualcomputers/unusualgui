@@ -18,55 +18,37 @@ class Message:
 # ... all other messages are sent to widgets with focus only
 
 class MouseDown:
-    def __init__(self,x,y):
-        self.x=x
-        self.y=y
+    def __init__(self,pos):
+        self.pos=pos
 
-click_time=100
+class MouseUp:
+    def __init__(self,pos,mouse_down_pos):
+        self.pos=pos
+        self.mouse_down_pos=mouse_down_pos
+
+# config.click_time=100
 # MouseDown followed by MouseUp within click_time ms is MouseClick
 # Either MouseUp or MouseClick are generated, not both 
 # x,y are coordinates of original MouseDown event
-class MouseClick:
-    def __init__(self,x,y):
-        self.x=x
-        self.y=y
+class MouseClick(MouseUp):
+    def __init__(self,mouse_down_pos):
+        MouseUp.__init__(self,mouse_down_pos,mouse_down_pos)
 
-mouse_long_time=1000
-mouse_long_distance=10
-drag_tick=50
-
-# MouseDown with no MouseUp and when motion is less then mouse_long_distance
-# is MouseLong
-# If mouse is moved more than mouse_long_distance before MouseUp,Dragging starts
-# Then Dragging event is generated every drag_tick seconds unless that is 0
-# Once mouse is up, MouseLongEnd is generated 
+# config.mouse_long_time=1000
+# MouseDown with no MouseUp within this time is MouseLong
 class MouseLong:
-    def __init__(self,x,y,mouse_down_event):
-        self.x=x
-        self.y=y
-        self.mouse_down_event=mouse_down_event
+    def __init__(self,mouse_down_pos):
+        self.pos=mouse_down_pos
 
-class MouseLongEnd:
-    def __init__(self,x,y,mouse_down_event):
-        self.x=x
-        self.y=y
-        self.mouse_down_event=mouse_down_event
-
+# config.drag_min_distance
+# MouseMotion with one of the buttons pressed is Dragging  and 
+#   distance covered is less than drag_min_distance
+#   NOTE: once we move more than drag_min_distance subsequent moves can be 
+#   smaller
 class Dragging:
-    def __init__(self,mouse_down_event,x,y):
-        self.start_event=mouse_down_event
-        self.x=x
-        self.y=y
-
-slide_speed=500
-# MouseLong followed by MouseLongEnd such that distance divided by time 
-# is > slide_speed generates slide event
-class Slide:
-    def __init__(self,drag_start,drag_end,direction):
-        self.start=drag_start
-        self.end=drag_end
-        self.direction=direction
-
+    def __init__(self,mouse_down_pos,pos):
+        self.start_event=mouse_down_pos
+        self.pos=pos
 
 class Direction(Enum):
     up=0
@@ -81,13 +63,13 @@ class Scroll:
         self.y=y
         self.direction=direction
 
+# config.key_repeat_start=1000
+# config.key_repeat=500
 # Keyboard event use pygame keys names
 # https://www.pygame.org/docs/ref/key.html
 # If a key is down for longer then key_repeat_start, start sending KeyUp every
 # key_repeat milliseconds
 # NOTE: this means that not every KeyUp is preceded by KeyDown
-key_repeat_start=1000
-key_repeat=500
 class KeyDown:
     def __init__(self,key,uni_code,mod):
         self.key=key
