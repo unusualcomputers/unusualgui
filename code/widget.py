@@ -43,12 +43,18 @@ class Widget:
  
     # Start receiving input
     # Returns False if this widget can't recieve focus True otherwise
-    def focus(self):
+    # pos may be either None or the mouse coordinates
+    def focus(self,pos):
         if not self.acceps_focus(): return False
         if not self.has_focus:
             self.needs_update=True
             self.has_focus=True
         return True
+
+    # This is for widgets that contain other widgets.
+    # They can override this and add their sub-widgets to the focus queue.
+    def focus_queue(self):
+        return [self]
 
     # Stop receiving input
     # Returns False if this widget can't recieve focus True otherwise

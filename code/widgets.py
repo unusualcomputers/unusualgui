@@ -6,31 +6,61 @@ from events import *
 class Widgets:
     __metaclass__ = Singleton
     def __init__(self):
-        self.widgets={}
-        self.active=None
-        self.focus=None
+        self.__widgets={}
+        self.__active=None
+        self.__focus_queue=[]
+        self.__focus=None
 
-    def add_widgets(self, name, widgets):
-        if len(widgets)==0:
-            raise Exception(u'Cannot add empty widget list')
-        self.active=self.get_widgets(name)
-        self.active+=widgets
-        self.focus=widgets[0]
+    def add(self,widgets,name="main"):
+        t=type(widgets)
+        if t==type(()):
+            self.__add_widgets(list(widgets),name)
+        elif t==type([]):
+            self.__add_widgets(widgets,name)
+        elif t==type({}):
+            self.__add_widgets(widgets.values,name)
+        else:
+            self.__add_widgets([widgets],name)
 
-    def get_widgets(self,name):
-        if name not in self.widgets: 
-            self.widgets[name]=[]
-        return self.widgets[name]
-            
-    def activate(self,surface,name):
-        active=self.get_widgets(name)
-        if self.active == active: return
-        for w in self.active:
-            w,unfocus()
+    def __add_widgets(self, widgets, name="main"):
+        l=len(widgets)
+        if l==0: return
+        self.__active=self.get(name)
+        self.__active+=widgets
+        for w in widgets:
+            self.__focus_queue+=widgets.focus_queue()
+        
+
+    def get(self,name="main"):
+        if name not in self.__widgets: 
+            self.__widgets[name]=[]
+        return self.__widgets[name]
+           
+    def draw(self,surface):
+        for w in self.__active:
+            w.draw(surface)
+           
+    def update(self,surface):
+        for w in self.__active:
+            w.update(surface)
+
+    def show(self,surface,name="main"):
+        active=self.get(name)
+        if self.__active == active: return
+        for w in self.__focus_queue:
+            w.unfocus
+        for w in self.__active:
             w.undraw(surface)
         
-        self.active=active
-        active[0].focus()
+        self.__active=active
+        self.__focus_queue=[]
+        for w in self.__active:
+            self.__focus_queue+=widgets.focus_queue()
+
+        i=0
+        sz= len(self.__focus_queue)
+        while i<sz and self.__set_focus(i) is not None:
+            i+=1
         for w in self.active:
             w.draw(surface)
      
@@ -41,34 +71,77 @@ class Widgets:
             else:
                 for w in event.receivers:
                     w.handle(event)
-        else: 
-            return self.get_focus().handle(event)
+        elif self.focused() is None:
+            return False
+        else:  
+            return self.focused().handle(event)
  
     def broadcast(self,message):
-        for w in self.active:
+        for w in self.__active:
             if w != message.sender: m.handle(message)
 
-    def get_focus(self):
-        return self.focus
+    def __set_focus(self,i,pos=None):
+        if i==self.__focus:
+            return self.focused()
+        if i>len(self.__focus_queue):
+            raise Exception("Focus index out of range")
+        if not self.__focus_queue[i].accepts_focus():
+            return None
+        f=self.focused()
+        if f is not None:
+            f.unfocus()
+        self.__focus=i
+        self.focused().focus(pos)
+        return self.focused()
+
+    def focused(self):
+        if self.__focus is None: return None
+        return self.focus_queue[self.__focus]
  
-    def find_focus(self,x,y):
-        if len(self.widgets)==0: return None
-        if self.focus.contains(x,y): return self.focus
-        
-        for w in self.active:
-            if w.contains(x,y) and w.accepts_focus(): 
-                self.focus.unfocus()
-                self.focus=w
-                w.focus()
-                return w
+    def focus_next(self):
+        sz=len(self.__focus_queue)
+        if sz==0: return None
+        elif sz==1: return self.__set_focus(0)
+        i=self.__focus+1
+        while(i<sz and self.__set_focus(i) is None):
+            i+=1
+        if i!=sz: return self.__focused()
+        i=0        
+        while(i<self.__focus and self.__set_focus(i) is None):
+            i+=1
+        return self.focused()
+ 
+    def focus_prev(self):
+        sz=len(self.__focus_queue)
+        if sz==0: return None
+        elif sz==1: return self.__set_focus(0)
+        i=self.__focus-1
+        while(i>=0 and self.__set_focus(i) is None):
+            i-=1
+        if i>0: return self.__focused()
+        i=sz-1        
+        while(i>self.__focus and self.__set_focus(i) is None):
+            i-=1
+        return self.focused()
 
+    def find(self,x,y):
+        for i in range(len(self.__active)):
+            w=self.__active[i]
+            if w.contains(x,y): return w
+        return None
+                    
+    def set_focus(self,x,y):
+        sz=len(self.__focus_queue)
+        for i in range(sz):
+            w=self.__focus_queue[i]
+            if w.contains(x,y):
+                return w.__set_focus(i,(x,y))
+        return None
+                    
     def set_focus(self,widget):
-        if widget==self.focus: return
-        for w in self.active:
+        if widget==self.focused(): return widget
+        for i in range(len(self.__focus_queue)):
+            w=self.__focus_queue[i]
             if w==widget:
-                self.focus.unfocus()
-                w.focus()
-                self.focus=w
-                return
-        raise Exception('Widget not found')
-
+                return self.__set_focus(i)
+        return None
