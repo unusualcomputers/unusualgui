@@ -3,39 +3,38 @@ from pygame.locals import *
 import init
 from singleton import Singleton
 from events import *
-from widgets import Widgets
 from Queue import Queue
 import time
 import logger
-from config import Config
+from gui_config import Config
 from math import sqrt
 
 log=logger.get('messages')
 
-def __millis():
+def _millis():
     return int(round(time.time() * 1000))
 
-def __elapsed(start,tm):
+def _elapsed(start,tm):
     return tm-start
 
-def __distance(start_pos,pos):
+def _distance(start_pos,pos):
     (x1,y1)=start_pos
     (x2,y2)=pos
     return sqrt((x2-x1)*(x2-x1)+(y2-y1)*(y2-y1))
 
-def __mouse_dist_sp(start_pos,start_time,pos,tm):
-    elapsed=__elapsed(start_time,tm)
-    distance=__distance(start_pos,pos)
+def _mouse_dist_sp(start_pos,start_time,pos,tm):
+    elapsed=_elapsed(start_time,tm)
+    distance=_distance(start_pos,pos)
     speed=distance/float(elapsed)
     return (distance,speed)
     
 class MessageLoop:
-    __metaclass__=Singleton
+    #__metaclass__=Singleton
 
-    def __init__(self):
+    def __init__(self,widgets):
         self.log=logger.get("MessageLoop")
-        self._queue = Queue()
-        self._widgets=Widgets()
+        self.__queue = Queue()
+        self.__widgets=widgets
         # keys
         self.last_key_down=None
         self.last_key_down_time=None
@@ -47,27 +46,28 @@ class MessageLoop:
         self.long_press=False
 
     def send(self,message):
-        self._queue.put(message,True,None)
+        self.__queue.put(message,True,None)
 
     def _check_timers(self):
-        tm=__millis()
+        tm=_millis()
         if self.last_key_down_time is not None:
-            if __elapsed(self.last_key_down_time,tm) > key_repeat_start:
+            if _elapsed(self.last_key_down_time,tm) > key_repeat_start:
                 if self.last_key_repeat is None:
                     self.last_key_repeat=tm
                     return KeyUp(self.last_key_down.key, 
                         self.last_key_down.unicode,
                         self.last_key_down.mod)
-                elif __elapsed(self.last_key_repeat) > key_repeat:
+                elif _elapsed(self.last_key_repeat,tm) > key_repeat:
                     self.last_key_repeat=tm
                     return KeyUp(self.last_key_down.key, 
                         self.last_key_down.unicode,
                         self.last_key_down.mod)
-        if not (self.dragging or self.long_click):
-            e=__elapsed(self.mouse_down_time)
-            if e > config.mouse_long_time:
-                self.long_click=True
-                return MouseLong(self.mouse_down_pos) 
+        if self.mouse_down_time is not None:
+            if not (self.dragging or self.long_press):
+                e=_elapsed(self.mouse_down_time,tm)
+                if e > Config.mouse_long_time:
+                    self.long_press=True
+                    return MouseLong(self.mouse_down_pos) 
         return None
  
     def _translate(self,event):
@@ -86,7 +86,7 @@ class MessageLoop:
 #        VIDEORESIZE      size, w, h
 #        VIDEOEXPOSE      none
 #        USEREVENT        code
-        tm=__millis()
+        tm=_millis()
         if event.type == QUIT:
             return Quit()
         elif event.type == KEYDOWN:
@@ -134,21 +134,21 @@ class MessageLoop:
                 return None 
             if self.dragging:
                 return Dragging(self.mouse_down_pos,p) 
-            d=__distance(self.mouse_down_pos,p)
-            if d > config.drag_min_distance:
+            d=_distance(self.mouse_down_pos,p)
+            if d > Config.drag_min_distance:
                 self.dragging=True
                 self.long_press=False
                 return Dragging(self.mouse_down_pos,p)
             return None 
         elif event.type == MOUSEBUTTONUP:
-            elapsed=__elapsed(self.mouse_down_time,tm)
+            elapsed=_elapsed(self.mouse_down_time,tm)
             start_pos=self.mouse_down_pos
             self.dragging=False
             self.long_press=False
             self.mouse_down_pos=None
             self.mouse_down_time=None
             pos=event.pos
-            if elapsed < config.click_time:
+            if elapsed < Config.click_time:
                 return MouseClick(start_pos)
             else:
                 return MouseUp(pos,start_pos)
@@ -156,22 +156,21 @@ class MessageLoop:
 
     def loop(self):
         while True:
-            while not self._queue.empty():
+            while not self.__queue.empty():
                 message=self._check_timers()
                 if message is not None:
-                    self._queue.put(message,True,None)
+                    self.__queue.put(message,True,None)
 
-                event = self._queue.get(True,None)
-                if type(event)==type(Quit):
-                    self._widgets.broadcast(event)
+                event = self.__queue.get(True,None)
+                if isinstance(event,Quit):
+                    self.__widgets.broadcast(event)
                     return
-                widgets.handle(event)
-                self._queue=self._queue[1:]
+                self.__widgets.handle(event)
             
             for event in pygame.event.get():            
                 message=self._translate(event)
                 if message is not None:
-                    self._queue.put(message,True,None)
+                    self.__queue.put(message,True,None)
 
 
 if __name__ == "__main__":

@@ -183,20 +183,18 @@ class Button(Widget):
     # Handle event, return True if handled
     # If some other widget handled it already 'handled' is True
     def handle(self, event, handled=False):
-        t=type(event)
-        if (t is MouseDown) or (t is KeyDown and t.unicode==u' '): 
+        if isinstance(event,MouseDown) or \
+                (isinstance(event,KeyDown) and event.unicode==u' '): 
             self.behaviour.on_mouse_down()
             return True
-        elif (t is MouseClick) or (t is MouseLongEnd) or \
-                (t is KeyUp and t.unicode==u' '):
+        elif isinstance(event,MouseClick) or isinstance(event,MouseUp) or \
+                (isinstance(event,KeyUp) and event.unicode==u' '):
             self.behaviour.on_mouse_up()
             return True
         else:
             return False
 
 if __name__ == "__main__":
-    scr = pygame.display.set_mode((300,600))
-    scr.fill(Config.bckg_color)
     def clicked_test(text): print text + u' clicked'
     def unclicked_test(text): print text + u' unclicked'
 
@@ -223,9 +221,15 @@ if __name__ == "__main__":
             #border_fill_color=Config.border_fill_color,
             #border_radius=Config.border_radius,
             #border_thickness=Config.border_thickness):
-    b1.draw(scr)
-    b2.draw(scr)
-    b3.draw(scr)
-    b4.draw(scr)
-    pygame.display.update()
-    while pygame.event.wait().type != pg.QUIT: pass
+    from widgets import Widgets
+    scr = pygame.display.set_mode((300,600))
+    scr.fill(Config.bckg_color)
+    widgets=Widgets(scr);
+    widgets.add((b1,b2,b3,b4))
+    widgets.run()      
+    #b1.draw(scr)
+    #b2.draw(scr)
+    #b3.draw(scr)
+    #b4.draw(scr)
+    #pygame.display.update()
+    #while pygame.event.wait().type != pg.QUIT: pass

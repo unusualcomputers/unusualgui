@@ -1,15 +1,25 @@
 import init
+import pygame
 from widget import Widget
 from singleton import Singleton
 from events import *
+from messages import MessageLoop
+
 
 class Widgets:
-    __metaclass__ = Singleton
-    def __init__(self):
+    #__metaclass__ = Singleton
+    def __init__(self,screen):
         self.__widgets={}
-        self.__active=None
+        self.__active=[]
         self.__focus_queue=[]
         self.__focus=None
+        self.__message_loop=MessageLoop(self)
+        self.__screen=screen
+
+    def run(self):
+        self.show()
+        self.draw()
+        self.__message_loop.loop()
 
     def add(self,widgets,name="main"):
         t=type(widgets)
@@ -28,7 +38,7 @@ class Widgets:
         self.__active=self.get(name)
         self.__active+=widgets
         for w in widgets:
-            self.__focus_queue+=widgets.focus_queue()
+            self.__focus_queue+=w.focus_queue()
         
 
     def get(self,name="main"):
@@ -36,15 +46,20 @@ class Widgets:
             self.__widgets[name]=[]
         return self.__widgets[name]
            
-    def draw(self,surface):
+    def draw(self):
+        surface=self.__screen
         for w in self.__active:
             w.draw(surface)
-           
-    def update(self,surface):
+        pygame.display.update()
+ 
+    def update(self):
+        surface=self.__screen
         for w in self.__active:
             w.update(surface)
+        pygame.display.update()
 
-    def show(self,surface,name="main"):
+    def show(self,name="main"):
+        surface=self.__screen
         active=self.get(name)
         if self.__active == active: return
         for w in self.__focus_queue:
@@ -61,11 +76,12 @@ class Widgets:
         sz= len(self.__focus_queue)
         while i<sz and self.__set_focus(i) is not None:
             i+=1
-        for w in self.active:
-            w.draw(surface)
+        self.draw()
      
     def handle(self,event):
-        if type(event)==type(Message):
+        if isinstance(event,MouseDown):
+            self.set_focusPos(event.pos[0],event.pos[1])
+        if isinstance(event,Message):
             if len(event.receivers)==0:
                 self.broadcast(event)
             else:
@@ -96,7 +112,7 @@ class Widgets:
 
     def focused(self):
         if self.__focus is None: return None
-        return self.focus_queue[self.__focus]
+        return self.__focus_queue[self.__focus]
  
     def focus_next(self):
         sz=len(self.__focus_queue)
@@ -130,12 +146,12 @@ class Widgets:
             if w.contains(x,y): return w
         return None
                     
-    def set_focus(self,x,y):
+    def set_focusPos(self,x,y):
         sz=len(self.__focus_queue)
         for i in range(sz):
             w=self.__focus_queue[i]
             if w.contains(x,y):
-                return w.__set_focus(i,(x,y))
+                return self.__set_focus(i,(x,y))
         return None
                     
     def set_focus(self,widget):

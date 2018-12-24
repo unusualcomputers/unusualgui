@@ -45,7 +45,7 @@ class Widget:
     # Returns False if this widget can't recieve focus True otherwise
     # pos may be either None or the mouse coordinates
     def focus(self,pos):
-        if not self.acceps_focus(): return False
+        if not self.accepts_focus(): return False
         if not self.has_focus:
             self.needs_update=True
             self.has_focus=True
@@ -59,7 +59,7 @@ class Widget:
     # Stop receiving input
     # Returns False if this widget can't recieve focus True otherwise
     def unfocus(self):
-        if not self.acceps_focus(): return False
+        if not self.accepts_focus(): return False
         if self.has_focus:
             self.needs_update=True
             self.has_focus=False
