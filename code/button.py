@@ -187,7 +187,7 @@ class Button(Widget):
                 (isinstance(event,KeyDown) and event.unicode==u' '): 
             self.behaviour.on_mouse_down()
             return True
-        elif isinstance(event,MouseClick) or isinstance(event,MouseUp) or \
+        elif isinstance(event,MouseUp) or \
                 (isinstance(event,KeyUp) and event.unicode==u' '):
             self.behaviour.on_mouse_up()
             return True

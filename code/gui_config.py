@@ -22,9 +22,6 @@ class Config:
     border_radius=5
     border_thickness=1
 
-    # MouseDown followed by MouseUp within click_time ms is MouseClick
-    click_time=100
-
     # MouseDown with no MouseUp and when motion is less then mouse_long_distance
     #   is MouseLong
     # If mouse is moved more than mouse_long_distance before MouseUp

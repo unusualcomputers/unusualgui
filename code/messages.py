@@ -35,10 +35,6 @@ class MessageLoop:
         self.log=logger.get("MessageLoop")
         self.__queue = Queue()
         self.__widgets=widgets
-        # keys
-        self.last_key_down=None
-        self.last_key_down_time=None
-        self.last_key_repeat=None
         # mouse
         self.mouse_down_time=None
         self.mouse_down_pos=None
@@ -48,29 +44,17 @@ class MessageLoop:
     def send(self,message):
         self.__queue.put(message,True,None)
 
-    def _check_timers(self):
+    def __check_timers(self):
         tm=_millis()
-        if self.last_key_down_time is not None:
-            if _elapsed(self.last_key_down_time,tm) > key_repeat_start:
-                if self.last_key_repeat is None:
-                    self.last_key_repeat=tm
-                    return KeyUp(self.last_key_down.key, 
-                        self.last_key_down.unicode,
-                        self.last_key_down.mod)
-                elif _elapsed(self.last_key_repeat,tm) > key_repeat:
-                    self.last_key_repeat=tm
-                    return KeyUp(self.last_key_down.key, 
-                        self.last_key_down.unicode,
-                        self.last_key_down.mod)
         if self.mouse_down_time is not None:
             if not (self.dragging or self.long_press):
                 e=_elapsed(self.mouse_down_time,tm)
                 if e > Config.mouse_long_time:
                     self.long_press=True
-                    return MouseLong(self.mouse_down_pos) 
-        return None
+                    message=MouseLong(self.mouse_down_pos) 
+                    self.__queue.put(message,True,None)
  
-    def _translate(self,event):
+    def __translate(self,event):
 #        QUIT             none
 #        ACTIVEEVENT      gain, state
 #        KEYDOWN          unicode, key, mod
@@ -90,23 +74,12 @@ class MessageLoop:
         if event.type == QUIT:
             return Quit()
         elif event.type == KEYDOWN:
-            self.last_key_down=event
-            self.last_key_down_time=tm
-            self.last_key_repeat=None
-            return KeyUp(self.last_key_down.key, 
-                self.last_key_down.unicode,
-                self.last_key_down.mod)
+            return KeyDown(event.key, 
+                event.unicode,
+                event.mod)
         elif event.type == KEYUP:
-            self.last_key_down_time=None
-            self.last_key_repeat=None
-            if event.key != self.last_key_down.key or \
-                event.mod != self.last_key_down.mod:
-                self.log.error("Key up not matching last Key down event.")
-            ev=KeyUp(self.last_key_down.key, 
-                self.last_key_down.unicode,
-                self.last_key_down.mod)
-            self.last_key_down=None
-            return ev
+            return KeyUp(event.key, 
+                event.mod)
         elif event.type == MOUSEBUTTONDOWN:
             p=event.pos
             self.mouse_down_time=None
@@ -148,19 +121,12 @@ class MessageLoop:
             self.mouse_down_pos=None
             self.mouse_down_time=None
             pos=event.pos
-            if elapsed < Config.click_time:
-                return MouseClick(start_pos)
-            else:
-                return MouseUp(pos,start_pos)
+            return MouseUp(pos,start_pos,elapsed)
         return None
 
     def loop(self):
         while True:
             while not self.__queue.empty():
-                message=self._check_timers()
-                if message is not None:
-                    self.__queue.put(message,True,None)
-
                 event = self.__queue.get(True,None)
                 if isinstance(event,Quit):
                     self.__widgets.broadcast(event)
@@ -168,9 +134,11 @@ class MessageLoop:
                 self.__widgets.handle(event)
             
             for event in pygame.event.get():            
-                message=self._translate(event)
+                message=self.__translate(event)
                 if message is not None:
                     self.__queue.put(message,True,None)
+
+            self.__check_timers()
 
 
 if __name__ == "__main__":

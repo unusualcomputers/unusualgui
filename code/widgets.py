@@ -79,6 +79,7 @@ class Widgets:
         self.draw()
      
     def handle(self,event):
+        print 'received message ', event
         if isinstance(event,MouseDown):
             self.set_focusPos(event.pos[0],event.pos[1])
         if isinstance(event,Message):
@@ -94,7 +95,7 @@ class Widgets:
  
     def broadcast(self,message):
         for w in self.__active:
-            if w != message.sender: m.handle(message)
+            if w != message.sender: w.handle(message)
 
     def __set_focus(self,i,pos=None):
         if i==self.__focus:

@@ -4,10 +4,11 @@ from enum import Enum
 # more general than pygame quit, can be put there by buttons for example
 class Quit:
     def __init__(self):
+        self.sender=None
         pass
 
 # message is an event broadcast to all listeners 
-# (all active windows or listener fnctions)
+# (all active windows or listener functions)
 class Message:
     def __init__(self, sender, message, params=None, receivers=[]):
         self.sender=sender
@@ -22,17 +23,10 @@ class MouseDown:
         self.pos=pos
 
 class MouseUp:
-    def __init__(self,pos,mouse_down_pos):
+    def __init__(self,pos,mouse_down_pos,elapsed):
         self.pos=pos
         self.mouse_down_pos=mouse_down_pos
-
-# config.click_time=100
-# MouseDown followed by MouseUp within click_time ms is MouseClick
-# Either MouseUp or MouseClick are generated, not both 
-# x,y are coordinates of original MouseDown event
-class MouseClick(MouseUp):
-    def __init__(self,mouse_down_pos):
-        MouseUp.__init__(self,mouse_down_pos,mouse_down_pos)
+        self.elapsed=elapsed # milis since MouseDown
 
 # config.mouse_long_time=1000
 # MouseDown with no MouseUp within this time is MouseLong
@@ -75,7 +69,6 @@ class KeyDown:
         self.key=key
         self.unicode=uni_code
         self.mod=mod
-
 
 class KeyUp:
     def __init__(self,key,uni_code,mod):
