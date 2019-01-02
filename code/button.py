@@ -5,42 +5,8 @@ from borders import *
 from events import *
 from widget import Widget
 
-# Style for a button that will change background color when clicked
-class ButtonFilledStyle:
-    def __init__(self,button,text,font_size):
-        self.button=button
-        font=button.fonts.get_font(Config.font_name,font_size)
-        (w,h)=font.size(text)
-        inner=button.inner_rect
-        if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"'+\
-                u'required: '+str((w,h))+u' available: '+\
-                str((inner.width,inner.height)))
-            raise Exception(u'Box too small for button "'+text+'"'+\
-                u'required: '+(w,h)+u'available: '+(inner.width,inner.height))
-        self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.img=font.render(text,Config.font_color,Config.bckg_color)
-        
-    def _draw_clicked(self,surface):
-        b=self.button
-        b.borders.draw(b.border_type,surface,b.rect,
-            b.border_color,b.border_fill_color,
-            b.border_radius,b.border_thickness)
-        surface.blit(self.img,self.pos)
-        
-    def _draw_not_clicked(self,surface):
-        b=self.button
-        if b.has_focus:
-            b.borders.draw(b.border_type,surface,b.rect,
-                Config.sel_color,None,
-                b.border_radius,b.border_thickness)
-        else: 
-            b.borders.draw(b.border_type,surface,b.rect,
-                b.border_color,None,
-                b.border_radius,b.border_thickness)
-        surface.blit(self.img,self.pos)
-
-# Style for a button that will make text bold and underlined when clicked
+# Style for a button that will make text bold when clicked 
+# and underlined when in focus
 class ButtonTextStyle:
     def __init__(self,button,text,font_size):
         self.button=button
@@ -54,38 +20,18 @@ class ButtonTextStyle:
                 str((inner.width,inner.height)))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,Config.font_color,Config.bckg_color)
-        
-        font=button.fonts.get_font(Config.font_name,font_size,bold=True)
-        font.set_underline(True)
-        (w,h)=font.size(text)
-        if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"'+\
-                u'required: '+str((w,h))+u' available: '+\
-                str((inner.width,inner.height)))
-        self.clicked_pos=\
-            (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.clicked_img=font.render(text,Config.font_color,Config.bckg_color)
-    
-        font=button.fonts.get_font(Config.font_name,font_size,italic=True)
-        (w,h)=font.size(text)
-        if w > inner.width or h > inner.height:
-            raise Exception(u'Box too small for button "'+text+'"'+\
-                u'required: '+str((w,h))+u' available: '+\
-                str((inner.width,inner.height)))
-        self.focus_pos=\
-            (inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.focus_img=font.render(text,Config.font_color,Config.bckg_color)
+        self.focus_img=font.render(text,Config.sel_font_color,Config.bckg_color)
+        self.clicked_img=font.render(text,Config.clicked_font_color,
+            Config.bckg_color)
     
     def _draw_clicked(self,surface):
-        b=self.button
-        b._draw_border(surface)
-        surface.blit(self.clcked_img,self.clicked_pos)
+        self.button._draw_border(surface)
+        surface.blit(self.clicked_img,self.pos)
         
     def _draw_not_clicked(self,surface):
-        b=self.button
-        b._draw_border(surface)
-        if b.has_focus:
-            surface.blit(self.focus_img,self.focus_pos)
+        self.button._draw_border(surface)
+        if self.button.has_focus:
+            surface.blit(self.focus_img,self.pos)
         else:
             surface.blit(self.img,self.pos)
         
@@ -107,11 +53,10 @@ class ButtonOnOff:
         self.button=button
 
     def on_mouse_down(self):
-        pass
-
-    def on_mouse_up(self):
         self._set_clicked(not self.is_clicked)
 
+    def on_mouse_up(self):
+        pass
 
 # Behaviour for linked buttons
 class ButtonLinked:
@@ -125,12 +70,13 @@ class ButtonLinked:
                 self.other_buttons.append(button)
 
     def on_mouse_down(self):
-        pass
-
-    def on_mouse_up(self):
         self.button._set_clicked(True)
         for b in self.other_buttons:
             b._set_clicked(False)
+
+
+    def on_mouse_up(self):
+        pass
 
 class Button(Widget):
     def __init__(self,
@@ -167,6 +113,21 @@ class Button(Widget):
             elif self.unclicked_func:
                 self.unclicked_func(self.text)
 
+    
+    def _draw_border(self,surface):
+        if self.is_clicked:
+            self.borders.draw(self.border_type,surface,self.rect,
+                Config.clicked_border_color,self.border_fill_color,
+                self.border_radius,self.border_thickness)
+        elif self.has_focus:
+            self.borders.draw(self.border_type,surface,self.rect,
+                Config.sel_border_color,self.border_fill_color,
+                self.border_radius,self.border_thickness)
+        else:
+            self.borders.draw(self.border_type,surface,self.rect,
+                Config.border_color,self.border_fill_color,
+                self.border_radius,self.border_thickness)
+    
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
     def update(self,surface):
@@ -184,11 +145,12 @@ class Button(Widget):
     # If some other widget handled it already 'handled' is True
     def handle(self, event, handled=False):
         if isinstance(event,MouseDown) or \
-                (isinstance(event,KeyDown) and event.unicode==u' '): 
+                (isinstance(event,KeyDown) and event.key==pygame.K_SPACE): 
             self.behaviour.on_mouse_down()
             return True
         elif isinstance(event,MouseUp) or \
-                (isinstance(event,KeyUp) and event.unicode==u' '):
+                (isinstance(event,KeyUp) and event.key==pygame.K_SPACE):
+            
             self.behaviour.on_mouse_up()
             return True
         else:
@@ -200,14 +162,11 @@ if __name__ == "__main__":
 
     b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test,
         border_type=BorderType.NONE)
-    b2=Button(u'Button Two',10,70,150,40,clicked_test,unclicked_test,
-        style=ButtonFilledStyle,
+    b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,
         border_type=BorderType.ROUNDED, border_radius=10)
     b3=Button(u'Button Three',10,130,150,35,clicked_test,unclicked_test,
-        style=ButtonFilledStyle,
         border_type=BorderType.SIMPLE,border_thickness=2)
     b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
-        style=ButtonFilledStyle,
         border_type=BorderType.OPEN,border_thickness=1)
             #text,
             #x,y,height,width,

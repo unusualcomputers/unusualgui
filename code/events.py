@@ -71,8 +71,7 @@ class KeyDown:
         self.mod=mod
 
 class KeyUp:
-    def __init__(self,key,uni_code,mod):
+    def __init__(self,key,mod):
         self.key=key
-        self.unicode=uni_code
         self.mod=mod
 

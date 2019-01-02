@@ -109,6 +109,26 @@ class Borders:
         cy5678=top+r
         for i in range(0,len(points)):
             (x,y)=points[i]
+            # lines 1 to 4
+            yy14=cy1234+y
+            # lines 5 to 8
+            yy58=cy5678-y
+            l=min(cx1278+x, cx3456-x)
+            rr=max(cx1278+x, cx3456-x)
+            for j in range(l+1,rr):
+                parr[j,yy14]=col_fill
+                parr[j,yy58]=col_fill
+            # lines 2 to 3
+            yy23=cy1234+x
+            # lines 6 to 7
+            yy67=cy5678-x
+            l=min(cx1278+y, cx3456-y)
+            rr=max(cx1278+y, cx3456-y)
+            for j in range(l+1,rr):
+                parr[j,yy23]=col_fill
+                parr[j,yy67]=col_fill
+        for i in range(0,len(points)):
+            (x,y)=points[i]
             #octant 1
             parr[cx1278+x,cy1234+y]=col
             #octant 2
@@ -125,12 +145,6 @@ class Borders:
             parr[cx1278+y,cy5678-x]=col
             #octant 8
             parr[cx1278+x,cy5678-y]=col
-            for j in range(cx3456-y+1,cx1278+y):
-                parr[j,cy1234+x]=col_fill
-                parr[j,cy5678-x]=col_fill
-            for j in range(cx3456-x+1,cx1278+x):
-                parr[j,cy1234+y]=col_fill
-                parr[j,cy5678-y]=col_fill
         
         for i in range(left+r,right-r+1):
             parr[i,top]=col
@@ -175,14 +189,15 @@ class Borders:
 
 if __name__ == "__main__":
     scr = pg.display.set_mode((300,600))
+    from gui_config import Config
     scr.fill(-1)
     f=32
     w=150
     h=50
     d=10
     t=1
-    c=(250,0,0)
-    c2=(120,0,0)
+    c=Config.border_color#(250,0,0)
+    c2=Config.border_fill_color#(120,0,0)
     b=Borders()
     b.draw(BorderType.NONE,scr,(10,10,w,h),c,radius=d)
     b.draw(BorderType.SIMPLE,scr,(10,100,w,h),c,radius=d)

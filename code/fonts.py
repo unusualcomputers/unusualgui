@@ -26,12 +26,13 @@ class Fonts:
     def __init__(self):
         self.__fonts_cache={}
 
-    def get_font(self,font_name, size, bold=False, italic=False):
-        key=(font_name,size,bold,italic)
+    def get_font(self,font_name,size,bold=False,italic=False,underline=False):
+        key=(font_name,size,bold,italic,underline)
         font=self.__fonts_cache.get(key, None)
         if font==None:
             font=_FontWithCache(
                 pygame.font.SysFont(font_name,size,bold,italic))
+            font.font.set_underline(underline)
             self.__fonts_cache[key]=font
         return font
 

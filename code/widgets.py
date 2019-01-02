@@ -55,7 +55,9 @@ class Widgets:
     def update(self):
         surface=self.__screen
         for w in self.__active:
-            w.update(surface)
+            if w.needs_update: 
+                w.update(surface)
+                w.needs_update=False
         pygame.display.update()
 
     def show(self,name="main"):
@@ -82,6 +84,14 @@ class Widgets:
         print 'received message ', event
         if isinstance(event,MouseDown):
             self.set_focusPos(event.pos[0],event.pos[1])
+        if isinstance(event,KeyDown) and event.key==pygame.K_TAB:
+            if self.focused() is not None:
+                self.focused().needs_update=True
+            if event.mod==pygame.KMOD_SHIFT:
+                self.focus_prev()
+            else:
+                self.focus_next()
+            self.focused().needs_update=True
         if isinstance(event,Message):
             if len(event.receivers)==0:
                 self.broadcast(event)
@@ -122,7 +132,7 @@ class Widgets:
         i=self.__focus+1
         while(i<sz and self.__set_focus(i) is None):
             i+=1
-        if i!=sz: return self.__focused()
+        if i!=sz: return self.focused()
         i=0        
         while(i<self.__focus and self.__set_focus(i) is None):
             i+=1

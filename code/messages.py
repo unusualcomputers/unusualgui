@@ -126,6 +126,7 @@ class MessageLoop:
 
     def loop(self):
         while True:
+            self.__widgets.update()
             while not self.__queue.empty():
                 event = self.__queue.get(True,None)
                 if isinstance(event,Quit):
