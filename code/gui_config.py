@@ -1,29 +1,40 @@
 from singleton import Singleton
 from borders import BorderType
+import copy
+
+class DrawingConfig:
+    def __init__(self):
+        # global settings
+        self.font_name="comicsansms"
+        self.font_size=20
+        self.font_color=(255,128,0)
+        self.bckg_color=(32,0,32)
+
+        # borders
+        self.border_color=self.font_color
+        self.border_fill_color=self.bckg_color
+        self.border_type=BorderType.SIMPLE
+        self.border_radius=5
+        self.border_thickness=1
+        self.border_padding=self.border_thickness
+
+        # selection settings
+        self.sel_font=self.font_name
+        self.sel_font_color=(255,160,0)
+        self.sel_border_fill_color=(16,16,16)
+        self.sel_border_color=self.sel_font_color
+        self.clicked_font_color=(255,100,0)
+        self.clicked_border_fill_color=(255,255,255)
+        self.clicked_border_color=self.clicked_font_color
+
+    def copy(self):
+        return copy.deepcopy(self)
 
 class Config:
     __metaclass__=Singleton
-    # global settings
-    font_name="comicsansms"
-    font_size=20
-    font_color=(255,128,0)
-    bckg_color=(32,0,32)
 
-    # selection settings
-    sel_font="comicsans"
-    sel_font_color=(255,140,0)
-    clicked_font_color=(255,110,0)
-    sel_bckg_color=(16,0,16)
-    sel_border_color=sel_font_color
-    clicked_border_color=clicked_font_color
-    
-
-    # borders
-    border_color=font_color
-    border_fill_color=bckg_color
-    border_type=BorderType.SIMPLE
-    border_radius=5
-    border_thickness=1
+    # Drawing config
+    default_drawing_conf=DrawingConfig()
 
     # MouseDown with no MouseUp and when motion is less then mouse_long_distance
     #   is MouseLong

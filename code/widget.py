@@ -5,27 +5,16 @@ from borders import *
 from fonts import *
 
 class Widget:
-    def __init__(self,
-            x,y,width,height,
-            border_type=Config.border_type,
-            border_color=Config.border_color,
-            border_fill_color=Config.border_fill_color,
-            border_radius=Config.border_radius,
-            border_thickness=Config.border_thickness):
+    def __init__(self,x,y,width,height,config=Config.default_drawing_conf):
         self.x=x
         self.y=y
         self.height=height
         self.width=width
         self.rect=pygame.Rect(x,y,width,height)
-        
-        self.border_type=border_type
-        self.border_color=border_color
-        self.border_fill_color=border_fill_color
-        self.border_radius=border_radius
-        self.border_thickness=border_thickness
-        
-        self.padding=border_thickness
-        self.inner_rect=self.rect.inflate(-2*self.padding,-2*self.padding)
+        self.config=config       
+ 
+        padding=config.border_thickness
+        self.inner_rect=self.rect.inflate(-2*padding,-2*padding)
         
         self.has_focus=False
         self.needs_update=True
@@ -72,15 +61,15 @@ class Widget:
         return self.rect
     
     def _draw_border(self,surface):
-        self.borders.draw(self.border_type,surface,self.rect,
-            self.border_color,self.border_fill_color,
-            self.border_radius,self.border_thickness)
+        self.borders.draw(self.config.border_type,surface,self.rect,
+            self.config.border_color,self.config.border_fill_color,
+            self.config.border_radius,self.config.border_thickness)
     
     def draw(self,screen):
         self.update(screen)
 
-    def undraw(self,screen,bckg_color=Config.bckg_color):
-        screen.fill(bckg_color,self.rect)
+    def undraw(self,screen):
+        screen.fill(self.config.bckg_color,self.rect)
 
     # Handle event, return True if handled
     # If some other widget handled it already 'handled' is True

@@ -5,13 +5,14 @@ from borders import *
 from events import *
 from widget import Widget
 
-# Style for a button that will make text bold when clicked 
-# and underlined when in focus
+# Default style for a button 
 class ButtonTextStyle:
-    def __init__(self,button,text,font_size):
+    def __init__(self,button,text):
         self.button=button
-        
-        font=button.fonts.get_font(Config.font_name,font_size)
+        self.borders=button.borders
+        self.config=button.config
+ 
+        font=button.fonts.get_font(self.config.font_name,self.config.font_size)
         (w,h)=font.size(text)
         inner=button.inner_rect
         if w > inner.width or h > inner.height:
@@ -19,22 +20,39 @@ class ButtonTextStyle:
                 u'required: '+str((w,h))+u' available: '+\
                 str((inner.width,inner.height)))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
-        self.img=font.render(text,Config.font_color,Config.bckg_color)
-        self.focus_img=font.render(text,Config.sel_font_color,Config.bckg_color)
-        self.clicked_img=font.render(text,Config.clicked_font_color,
-            Config.bckg_color)
+        self.img=font.render(text,self.config.font_color,self.config.bckg_color)
+        self.focus_img=font.render(text,
+            self.config.sel_font_color,self.config.sel_border_fill_color)
+        self.clicked_img=font.render(text,self.config.clicked_font_color,
+            self.config.clicked_border_fill_color)
     
     def _draw_clicked(self,surface):
-        self.button._draw_border(surface)
+        self._draw_border(surface)
         surface.blit(self.clicked_img,self.pos)
         
     def _draw_not_clicked(self,surface):
-        self.button._draw_border(surface)
+        self._draw_border(surface)
         if self.button.has_focus:
             surface.blit(self.focus_img,self.pos)
         else:
             surface.blit(self.img,self.pos)
         
+    def _draw_border(self,surface):
+        rect=self.button.rect
+        if self.button.is_clicked:
+            self.borders.draw(self.config.border_type,surface,rect,
+                self.config.clicked_border_color,
+                self.config.clicked_border_fill_color,
+                self.config.border_radius,self.config.border_thickness)
+        elif self.button.has_focus:
+            self.borders.draw(self.config.border_type,surface,rect,
+                self.config.sel_border_color,self.config.sel_border_fill_color,
+                self.config.border_radius,self.config.border_thickness)
+        else:
+            self.borders.draw(self.config.border_type,surface,rect,
+                self.config.border_color,self.config.border_fill_color,
+                self.config.border_radius,self.config.border_thickness)
+    
 
 # Behaviour for simple button
 class ButtonClick:
@@ -53,7 +71,7 @@ class ButtonOnOff:
         self.button=button
 
     def on_mouse_down(self):
-        self._set_clicked(not self.is_clicked)
+        self.button._set_clicked(not self.button.is_clicked)
 
     def on_mouse_up(self):
         pass
@@ -86,19 +104,12 @@ class Button(Widget):
             unclicked_func=None,
             style=ButtonTextStyle,
             behaviour=ButtonClick,
-            font_size=Config.font_size,
-            border_type=Config.border_type,
-            border_color=Config.border_color,
-            border_fill_color=Config.border_fill_color,
-            border_radius=Config.border_radius,
-            border_thickness=Config.border_thickness):
+            config=Config.default_drawing_conf):
         
-        Widget.__init__(self,x,y,width,height,
-            border_type,border_color,border_fill_color,
-            border_radius,border_thickness)
+        Widget.__init__(self,x,y,width,height,config)
         
         self.behaviour=behaviour(self)
-        self.style=style(self,text,font_size)
+        self.style=style(self,text)
         self.text=text
         self.is_clicked=False
         self.clicked_func=clicked_func
@@ -112,21 +123,6 @@ class Button(Widget):
                 self.clicked_func(self.text)
             elif self.unclicked_func:
                 self.unclicked_func(self.text)
-
-    
-    def _draw_border(self,surface):
-        if self.is_clicked:
-            self.borders.draw(self.border_type,surface,self.rect,
-                Config.clicked_border_color,self.border_fill_color,
-                self.border_radius,self.border_thickness)
-        elif self.has_focus:
-            self.borders.draw(self.border_type,surface,self.rect,
-                Config.sel_border_color,self.border_fill_color,
-                self.border_radius,self.border_thickness)
-        else:
-            self.borders.draw(self.border_type,surface,self.rect,
-                Config.border_color,self.border_fill_color,
-                self.border_radius,self.border_thickness)
     
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
@@ -160,29 +156,31 @@ if __name__ == "__main__":
     def clicked_test(text): print text + u' clicked'
     def unclicked_test(text): print text + u' unclicked'
 
-    b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test,
-        border_type=BorderType.NONE)
-    b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,
-        border_type=BorderType.ROUNDED, border_radius=10)
+    c1=Config.default_drawing_conf.copy()
+    c1.border_type=BorderType.NONE
+    b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test,config=c1,
+        behaviour=ButtonLinked)
+    c2=Config.default_drawing_conf.copy()
+    c2.border_type=BorderType.ROUNDED
+    c2.border_radius=10
+    b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,config=c2,
+        behaviour=ButtonLinked)
+    c3=Config.default_drawing_conf.copy()
+    c3.border_thickness=2
+    c3.border_type=BorderType.SIMPLE
     b3=Button(u'Button Three',10,130,150,35,clicked_test,unclicked_test,
-        border_type=BorderType.SIMPLE,border_thickness=2)
+        config=c3,
+        behaviour=ButtonLinked)
+    c4=Config.default_drawing_conf.copy()
+    c4.border_thickness=1
+    c4.border_type=BorderType.OPEN
     b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
-        border_type=BorderType.OPEN,border_thickness=1)
-            #text,
-            #x,y,height,width,
-            #clicked_func,
-            #unclicked_func=None,
-            #style=ButtonTextStyle,
-            #behaviour=ButtonClick,
-            #font_size=Config.font_size,
-            #border_type=Config.border_type,
-            #border_color=Config.border_color,
-            #border_fill_color=Config.border_fill_color,
-            #border_radius=Config.border_radius,
-            #border_thickness=Config.border_thickness):
+        config=c4,
+        behaviour=ButtonLinked)
+    b1.behaviour.add_other([b2,b3,b4])
     from widgets import Widgets
     scr = pygame.display.set_mode((300,600))
-    scr.fill(Config.bckg_color)
+    scr.fill(Config.default_drawing_conf.bckg_color)
     widgets=Widgets(scr);
     widgets.add((b1,b2,b3,b4))
     widgets.run()      
