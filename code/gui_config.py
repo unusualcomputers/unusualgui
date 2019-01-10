@@ -1,5 +1,4 @@
 from singleton import Singleton
-from borders import BorderType
 import copy
 
 class DrawingConfig:
@@ -13,22 +12,31 @@ class DrawingConfig:
         # borders
         self.border_color=self.font_color
         self.border_fill_color=self.bckg_color
-        self.border_type=BorderType.SIMPLE
         self.border_radius=5
         self.border_thickness=1
         self.border_padding=self.border_thickness
 
         # selection settings
         self.sel_font=self.font_name
-        self.sel_font_color=(255,160,0)
-        self.sel_border_fill_color=(16,16,16)
-        self.sel_border_color=self.sel_font_color
+        self.sel_font_color=self.font_color#(255,160,0)
+        self.sel_border_fill_color=self.border_fill_color#(16,16,16)
+        self.sel_border_color=(255,160,0)#self.sel_font_color
         self.clicked_font_color=(255,100,0)
         self.clicked_border_fill_color=(255,255,255)
         self.clicked_border_color=self.clicked_font_color
 
     def copy(self):
         return copy.deepcopy(self)
+
+    def with_no_border(self):
+        n=self.copy()
+        n.border_thickness=0
+        return n
+
+    def with_rect_border(self):
+        n=self.copy()
+        n.border_radius=0
+        return n
 
 class Config:
     __metaclass__=Singleton

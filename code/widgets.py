@@ -129,7 +129,10 @@ class Widgets:
         sz=len(self.__focus_queue)
         if sz==0: return None
         elif sz==1: return self.__set_focus(0)
-        i=self.__focus+1
+        if self.__focus is None:
+            i=0
+        else:
+            i=self.__focus+1
         while(i<sz and self.__set_focus(i) is None):
             i+=1
         if i!=sz: return self.focused()

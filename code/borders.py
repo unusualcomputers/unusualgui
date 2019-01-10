@@ -2,12 +2,6 @@ import pygame as pg
 from enum import Enum
 from singleton import Singleton
 
-class BorderType(Enum):
-    NONE=0
-    SIMPLE=1
-    OPEN=2
-    ROUNDED=3
-
 class Borders:
     __metaclass__=Singleton
     def __init__(self):
@@ -156,54 +150,20 @@ class Borders:
             
         del parr
     
-    def draw(self,border_type,surface,rect,
-            color_border,color_fill=None,
-            radius=0,thickness=1):
-        if border_type == BorderType.NONE:
+    def draw(self,surface,rect,
+            radius=0,thickness=1,
+            color_border=None,color_fill=None):
+        if thickness==0 or color_border==None:
             return
-        elif border_type == BorderType.SIMPLE:
+        elif radius==0:
             pg.draw.rect(surface,color_border,rect,thickness)
-            if color_fill:
+            if color_fill is not None:
                 rect=pg.Rect(rect).inflate(-2,-2)
                 surface.fill(color_fill,rect)
-        elif border_type == BorderType.OPEN:
-            rect=pg.Rect(rect)
-            top=rect.top
-            bottom=rect.bottom
-            left=rect.left
-            right=rect.right   
-            pg.draw.line(surface,color_border,
-                (left+radius,top),(right-radius,top),thickness)
-            pg.draw.line(surface,color_border,
-                (left+radius,bottom),(right-radius,bottom),thickness)
-            pg.draw.line(surface,color_border,
-                (left,top+radius),(left,bottom-radius),thickness)
-            pg.draw.line(surface,color_border,
-                (right,top+radius),(right,bottom-radius),thickness)
-        elif border_type == BorderType.ROUNDED:
-            if color_fill:
+        else:
+            if color_fill is not None:
                 self._bresenham_filled(surface,rect,
                     color_border,color_fill,radius)
             else:            
                 self._bresenham_border(surface,rect,color_border,radius)
 
-if __name__ == "__main__":
-    scr = pg.display.set_mode((300,600))
-    from gui_config import Config
-    scr.fill(-1)
-    f=32
-    w=150
-    h=50
-    d=10
-    t=1
-    c=Config.border_color#(250,0,0)
-    c2=Config.border_fill_color#(120,0,0)
-    b=Borders()
-    b.draw(BorderType.NONE,scr,(10,10,w,h),c,radius=d)
-    b.draw(BorderType.SIMPLE,scr,(10,100,w,h),c,radius=d)
-    b.draw(BorderType.OPEN,scr,(10,160,w,h),c,radius=d)
-    b.draw(BorderType.ROUNDED,scr,(10,220,w,h),c,radius=d)
-    b.draw(BorderType.ROUNDED,scr,(10,350,w,h),c,c2,radius=d)
-    b.draw(BorderType.SIMPLE,scr,(10,420,w,h),c,c2,radius=d)
-    pg.display.update()
-    while pg.event.wait().type != pg.QUIT: pass

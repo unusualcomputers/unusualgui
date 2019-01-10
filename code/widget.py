@@ -61,9 +61,10 @@ class Widget:
         return self.rect
     
     def _draw_border(self,surface):
-        self.borders.draw(self.config.border_type,surface,self.rect,
-            self.config.border_color,self.config.border_fill_color,
-            self.config.border_radius,self.config.border_thickness)
+        config=self.config
+        self.borders.draw(surface,self.rect,
+            config.border_radius,config.border_thickness,
+            config.border_color,config.border_fill_color)
     
     def draw(self,screen):
         self.update(screen)
