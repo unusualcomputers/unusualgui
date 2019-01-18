@@ -26,33 +26,24 @@ class Widget:
     def contains(self,x,y):
         return self.rect.collidepoint(x,y)
    
-    # Does this widget accept focus?
-    def accepts_focus(self):
-        return True
- 
-    # Start receiving input
-    # Returns False if this widget can't recieve focus True otherwise
-    # pos may be either None or the mouse coordinates
-    def focus(self,pos):
-        if not self.accepts_focus(): return False
-        if not self.has_focus:
-            self.needs_update=True
-            self.has_focus=True
-        return True
-
     # This is for widgets that contain other widgets.
     # They can override this and add their sub-widgets to the focus queue.
     def focus_queue(self):
         return [self]
+ 
+    # Start receiving input
+    # Returns False if this widget can't recieve focus True otherwise
+    def focus(self):
+        if not self.has_focus:
+            self.needs_update=True
+            self.has_focus=True
 
     # Stop receiving input
     # Returns False if this widget can't recieve focus True otherwise
     def unfocus(self):
-        if not self.accepts_focus(): return False
         if self.has_focus:
             self.needs_update=True
             self.has_focus=False
-        return True
 
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
@@ -68,12 +59,12 @@ class Widget:
     
     def draw(self,screen):
         self.update(screen)
-
-    def undraw(self,screen):
-        screen.fill(self.config.bckg_color,self.rect)
+        self.needs_update=False
 
     # Handle event, return True if handled
     # If some other widget handled it already 'handled' is True
     def handle(self, event, handled=False):
+        if isinstance(event,MouseDown): 
+            self.__widgets.request_focus(self)
         return False
 
