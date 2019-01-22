@@ -65,6 +65,7 @@ class Button(Widget):
             self.style._draw_clicked(surface)
         else:
             self.style._draw_not_clicked(surface)
+        self.needs_update=False
         return self.rect
     
 
@@ -75,11 +76,11 @@ class Button(Widget):
         if isinstance(event,MouseDown) or \
                 (isinstance(event,KeyDown) and event.key==pygame.K_SPACE): 
             self.__widgets.request_focus(self)
+            self.needs_update=True
             self.behaviour.on_mouse_down()
             return True
         elif isinstance(event,MouseUp) or \
                 (isinstance(event,KeyUp) and event.key==pygame.K_SPACE):
-            
             self.behaviour.on_mouse_up()
             return True
         else:
@@ -112,9 +113,9 @@ if __name__ == "__main__":
     from widgets import Widgets
     scr = pygame.display.set_mode((300,600))
     scr.fill(Config.default_drawing_conf.bckg_color)
-    widgets=Widgets(scr);
+    widgets=Widgets();
     widgets.add((b1,b2,b3,b4))
-    widgets.run()      
+    widgets.run(scr)      
     #b1.draw(scr)
     #b2.draw(scr)
     #b3.draw(scr)

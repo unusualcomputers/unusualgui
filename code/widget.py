@@ -3,6 +3,7 @@ import init
 from gui_config import Config
 from borders import *
 from fonts import *
+from events import *
 
 class Widget:
     def __init__(self,x,y,width,height,config=Config.default_drawing_conf):
@@ -21,10 +22,13 @@ class Widget:
         
         self.borders=Borders()
         self.fonts=Fonts()
+        from widgets import Widgets
+        self.__widgets=Widgets()
 
-    # True if this widget contains point (x,y)
+    # Returns a widget that contains point (x,y), if any
     def contains(self,x,y):
-        return self.rect.collidepoint(x,y)
+        if self.rect.collidepoint(x,y): return self
+        else: return None
    
     # This is for widgets that contain other widgets.
     # They can override this and add their sub-widgets to the focus queue.

@@ -21,17 +21,19 @@ class Widgets:
     
     def focused(self):
         if self.__focus_idx==-1:
-            return NoneWidget
+            return NoneWidget()
         else:
             return self.__focus_queue[self.__focus_idx]
 
-    def run(self, screen,config=Config.default_drawing_conf):
+    def run(self,screen,config=Config.default_drawing_conf):
+        if self.__screen or self.__config:
+            raise Exception("Widgets cannot be initialised twice")
         self.__screen=screen
         self.__config=config
         self.show()
         self.__message_loop.loop()
 
-    def add_widgets(self,widgets,name="main"):
+    def add(self,widgets,name="main"):
         t=type(widgets)
         if t==type(()):
             self.__add_widgets(list(widgets),name)
@@ -57,29 +59,31 @@ class Widgets:
            
     def __draw(self):
         surface=self.__screen
-        surface.fill(self.__conf.bckg_color)
+        surface.fill(self.__config.bckg_color)
         for w in self.__active:
             w.draw(surface)
         pygame.display.update()
     
     def update(self):
         surface=self.__screen
+        update_display=False
         for w in self.__active:
             if w.needs_update:
                 w.update(surface)
-                w.needs_update=False
+                update_display=True
+        if update_display:
+            pygame.display.update()
 
     def show(self,tab_name="main"):
         surface=self.__screen
         if surface is None: raise Exception("Screen not initialised")
         active=self.__get_tab(tab_name)
-        if not active or  self.__active==active: return
+        if not active: raise Exception("Tab %s not found" % tab_name)
         self.__active=active
         self.focused().unfocus()
         self.__focus_queue=[]
         for w in self.__active:
-            self.__focus_queue+=widgets.focus_queue()
-            w.needs_update=True
+            self.__focus_queue+=w.focus_queue()
 
         self.__set_focus(0)
         self.__draw()
@@ -101,17 +105,24 @@ class Widgets:
             else:
                 for w in event.receivers:
                     w.handle(event)
+        elif isinstance(event,MouseDown):
+            (x,y)=event.pos
+            for w in self.__active:
+                hw=w.contains(x,y)
+                if hw is not None:
+                    if not hw.has_focus:
+                        self.request_focus(hw)
+                    hw.handle(event)
+                    return
         else:  
             self.focused().handle(event)
  
     def broadcast(self,message):
         for w in self.__active:
-            if w != message.sender: w.handle(message)
+            if w!=message.sender: w.handle(message)
 
     def __set_focus(self,i):
         if not self.__focus_queue:
-            self.__focus_idx=-1
-            self._focused=NoneWidget
             return
         if self.__focus_idx!=-1:
             self.__focus_queue[self.__focus_idx].unfocus()
@@ -121,12 +132,10 @@ class Widgets:
     def request_focus(self,widget):
         i=0
         sz=len(self.__focus_queue)
-        if sz==0:
-            raise Exception("Focus requested for empty focus queue.")
+        if sz==0: return
         while(widget!=self.__focus_queue[i]):
             i+=1
-            if i==sz:
-                raise Exception("Focus request widget not in focus queue.")
+            if i==sz: return
         self.__set_focus(i)
 
     def focus_next(self):
@@ -140,5 +149,5 @@ class Widgets:
         sz=len(self.__focus_queue)
         if sz:
             i=self.__focus_idx-1
-            if(i<0): i=0
+            if(i<0): i=sz-1
             self.__set_focus(i)
