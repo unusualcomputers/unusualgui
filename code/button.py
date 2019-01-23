@@ -86,7 +86,7 @@ class Button(Widget):
         else:
             return False
 
-class Switch(Button):
+class OnOffButton(Button):
     def __init__(self,
             text,
             x,y,width,height,
@@ -107,7 +107,7 @@ if __name__ == "__main__":
     c2=Config.default_drawing_conf.with_rect_border()
     b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,config=c2,
         style=ButtonStyle.Borderless)
-    b3=Switch(u'Button Three',10,130,150,35,clicked_test,unclicked_test)
+    b3=OnOffButton(u'Button Three',10,130,150,35,clicked_test,unclicked_test)
     b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
         style=ButtonStyle.Text)
     from widgets import Widgets

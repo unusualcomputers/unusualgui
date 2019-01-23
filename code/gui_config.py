@@ -11,18 +11,20 @@ class DrawingConfig:
 
         # borders
         self.border_color=self.font_color
-        self.border_fill_color=(128,128,128)#self.bckg_color
+        self.border_fill_color=self.bckg_color
         self.border_radius=5
         self.border_thickness=1
-        self.border_padding=self.border_thickness
-
+        
+        # padding
+        self.padding=self.border_thickness
+        
         # selection settings
         self.sel_font=self.font_name
         self.sel_font_color=self.font_color#(255,160,0)
         self.sel_border_fill_color=(16,16,16)#self.border_fill_color#(16,16,16)
-        self.sel_border_color=(255,160,0)#self.sel_font_color
+        self.sel_border_color=(255,200,0)#self.sel_font_color
         self.clicked_font_color=(255,100,0)
-        self.clicked_border_fill_color=(255,255,255)
+        self.clicked_border_fill_color=(128,0,128)
         self.clicked_border_color=self.clicked_font_color
 
     def copy(self):

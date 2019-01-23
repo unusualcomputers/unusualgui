@@ -14,7 +14,7 @@ class Widget:
         self.rect=pygame.Rect(x,y,width,height)
         self.config=config       
  
-        padding=config.border_thickness
+        padding=config.padding
         self.inner_rect=self.rect.inflate(-2*padding,-2*padding)
         
         self.has_focus=False
