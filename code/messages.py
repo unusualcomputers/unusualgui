@@ -32,7 +32,6 @@ class MessageLoop:
     #__metaclass__=Singleton
 
     def __init__(self,widgets):
-        self.log=logger.get("MessageLoop")
         self.__queue = Queue()
         self.__widgets=widgets
         # mouse
@@ -88,13 +87,13 @@ class MessageLoop:
             self.long_press=False
             # buttons 4-7 are scrolling
             if event.button==7:
-                return Scroll(p.x,p.y,Direction.right)
+                return Scroll(p,Direction.right)
             elif event.button==6:
-                return Scroll(p.x,p.y,Direction.left)
+                return Scroll(p,Direction.left)
             elif event.button==5:
-                return Scroll(p.x,p.y,Direction.down)
+                return Scroll(p,Direction.down)
             elif event.button==4:
-                return Scroll(p.x,p.y,Direction.up)
+                return Scroll(p,Direction.up)
             else:# all other buttons are the same
                 self.mouse_down_time=tm
                 self.mouse_down_pos=p
@@ -114,6 +113,7 @@ class MessageLoop:
                 return Dragging(self.mouse_down_pos,p)
             return None 
         elif event.type == MOUSEBUTTONUP:
+            if self.mouse_down_time is None: return None
             elapsed=_elapsed(self.mouse_down_time,tm)
             start_pos=self.mouse_down_pos
             self.dragging=False

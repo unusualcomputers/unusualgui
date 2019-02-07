@@ -5,7 +5,7 @@ from borders import *
 from fonts import *
 from events import *
 
-class Widget:
+class Widget(object):
     def __init__(self,x,y,width,height,config=Config.default_drawing_conf):
         self.x=x
         self.y=y
@@ -41,6 +41,7 @@ class Widget:
         if not self.has_focus:
             self.needs_update=True
             self.has_focus=True
+        return True
 
     # Stop receiving input
     # Returns False if this widget can't recieve focus True otherwise

@@ -6,8 +6,9 @@ from singleton import Singleton
 from events import *
 from messages import MessageLoop
 from gui_config import Config
+import logger
 
-
+log=logger.get('widgets')
 class Widgets:
     __metaclass__ = Singleton
     def __init__(self):
@@ -78,7 +79,10 @@ class Widgets:
         surface=self.__screen
         if surface is None: raise Exception("Screen not initialised")
         active=self.__get_tab(tab_name)
-        if not active: raise Exception("Tab %s not found" % tab_name)
+        if not active: 
+            log.warning("No active tab")
+            return
+            #raise Exception("Tab %s not found" % tab_name)
         self.__active=active
         self.focused().unfocus()
         self.__focus_queue=[]
@@ -106,9 +110,8 @@ class Widgets:
                 for w in event.receivers:
                     w.handle(event)
         elif isinstance(event,MouseDown):
-            (x,y)=event.pos
             for w in self.__active:
-                hw=w.contains(x,y)
+                hw=w.contains(event.x,event.y)
                 if hw is not None:
                     if not hw.has_focus:
                         self.request_focus(hw)

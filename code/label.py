@@ -11,6 +11,12 @@ class Label(Widget):
             config=Config.default_drawing_conf):
         
         Widget.__init__(self,x,y,width,height,config)
+        self.__text=''
+        self.__set_text(text)
+
+    def __set_text(self,text):
+        self.__text=text
+        config=self.config
         font=self.fonts.get_font(config.font_name,config.font_size)
         (w,h)=font.size(text)
         inner=self.inner_rect
@@ -20,7 +26,18 @@ class Label(Widget):
                 str((inner.width,inner.height)))
         self.pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,config.font_color,config.bckg_color)
+        self.needs_update=True
 
+    @property
+    def text(self):
+        return self.__text
+    
+    @text.setter
+    def text(self,t):
+        print 'setting ',t
+        if t==self.__text: return
+        else: self.__set_text(t)
+        
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
     def update(self,surface):
@@ -55,4 +72,5 @@ if __name__ == "__main__":
     scr.fill(Config.default_drawing_conf.bckg_color)
     widgets=Widgets();
     widgets.add((l1,l2,l3,l4))
+    l4.text='LABEL FOUR'
     widgets.run(scr)      

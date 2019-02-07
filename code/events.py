@@ -20,6 +20,8 @@ class Message:
 class MouseEvent:
     def __init__(self,pos):
         self.pos=pos
+        self.x=pos[0]
+        self.y=pos[1]
 
 class MouseDown(MouseEvent):
     def __init__(self,pos):
@@ -55,10 +57,8 @@ class Direction(Enum):
 
 # For scrollwheels
 class Scroll(MouseEvent):
-    def __init__(self,x,y,direction):
-        MouseEvent.__init__(self,(x,y))
-        self.x=x
-        self.y=y
+    def __init__(self,pos,direction):
+        MouseEvent.__init__(self,pos)
         self.direction=direction
 
 # config.key_repeat_start=1000

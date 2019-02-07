@@ -11,7 +11,7 @@ class DrawingConfig:
 
         # borders
         self.border_color=self.font_color
-        self.border_fill_color=self.bckg_color
+        self.border_fill_color=(255,255,255)#self.bckg_color
         self.border_radius=5
         self.border_thickness=1
         
@@ -26,6 +26,8 @@ class DrawingConfig:
         self.clicked_font_color=(255,100,0)
         self.clicked_border_fill_color=(128,0,128)
         self.clicked_border_color=self.clicked_font_color
+
+        self.progress_style=2 # 0-thin line,1-rectangular,else-rounded
 
     def copy(self):
         return copy.deepcopy(self)
