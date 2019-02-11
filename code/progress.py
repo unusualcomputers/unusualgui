@@ -14,14 +14,14 @@ class Progress(Widget):
             x,y,width,height,
             config=Config.default_drawing_conf,
             min_value=0.0,max_value=1.0,
-            has_tooltip=False,step_size=None,
+            step_size=None,
             update_func=_default_update_func):
         Widget.__init__(self,x,y,width,height,config)
         self.__value=value
         self.__min=min_value
         self.__max=max_value
+        
         self.takes_input=True
-        self.__has_tooltip=has_tooltip
         if update_func:
             self.__update_func=update_func    
         else:
@@ -29,11 +29,18 @@ class Progress(Widget):
         if step_size:
             self.__step_size=step_size
         else:
-            self.__step_size=(max_value-min_value)/20.0
-        if has_tooltip:
+            self.__step_size=(max_value-min_value)/50.0
+        self.__tooltip_style=config.progress_tooltip
+        if self.__tooltip_style!=0:
             self.__tooltip_font=self.fonts.get_font(
-                config.font_name,config.font_size)
+                config.font_name,config.progress_tooltip_font_sz)
         
+            if min_value==0.0 and max_value==1.0:
+                self.__value_format=lambda x : ('%i%%' % int(x*100)).rjust(4)
+            else:
+                self.__value_format=lambda x : \
+                    ('%i' % x).rjust(len(str(self.__max)))
+
 
     @property
     def value(self):
@@ -69,6 +76,20 @@ class Progress(Widget):
             self.borders.draw_partial(surface,self.rect,border_color,
                 fill_color,bckg_color,p,True)
         #TODO: draw tooltip
+        if self.__tooltip_style==1:
+            text=self.__value_format(self.__value)
+            font=self.__tooltip_font
+            (w,h)=font.size(self.__value_format(self.__max))
+            inner=self.inner_rect
+            if w > inner.width or h > inner.height:
+                raise Exception(u'Box too small for label "'+text+'"'+\
+                    u'required: '+str((w,h))+u' available: '+\
+                    str((inner.width,inner.height)))
+            pos=(inner.x+(inner.width-w)/2.0,inner.y+(inner.height-h)/2.0) 
+            img=font.render(text,conf.progress_tooltip_font_color,(0,0,0))
+            img.set_colorkey((0,0,0))
+            img.set_alpha(conf.progress_tooltip_alpha)
+            surface.blit(img,pos)
         self.needs_update=False
         return self.rect
  
@@ -102,7 +123,7 @@ class Progress(Widget):
         return False 
 
 if __name__ == "__main__":
-    p1=Progress(0.1,10,10,150,32)
+    p1=Progress(32,10,10,150,32,min_value=13,max_value=2109)
     p2=Progress(0.3,10,70,150,40)
     p3=Progress(0.65,10,130,150,35)
     p4=Progress(0.99,10,190,150,50)

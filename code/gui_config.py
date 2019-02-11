@@ -28,6 +28,10 @@ class DrawingConfig:
         self.clicked_border_color=self.clicked_font_color
 
         self.progress_style=2 # 0-thin line,1-rectangular,else-rounded
+        self.progress_tooltip=1 # 0-none,1-inside,2-floating
+        self.progress_tooltip_font_sz=self.font_size
+        self.progress_tooltip_alpha=128
+        self.progress_tooltip_font_color=self.font_color
 
     def copy(self):
         return copy.deepcopy(self)
