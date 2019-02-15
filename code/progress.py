@@ -67,8 +67,10 @@ class Progress(Widget):
         bckg_color=conf.bckg_color
         # 0-thin line,1-rectangular,else-rounded
         if conf.progress_style == 0:
-            self.borders.draw_partial(surface,self.rect,border_color,
-                fill_color,bckg_color,p,False,0)
+            mid=int(self.rect.left+p*self.rect.width)
+            y=self.rect.top
+            pygame.draw.line(surface,border_color,(self.rect.left,y),(mid,y))
+            pygame.draw.line(surface,fill_color,(mid,y),(self.rect.right,y))
         elif conf.progress_style==1:
             self.borders.draw_partial(surface,self.rect,border_color,
                 fill_color,bckg_color,p,False)
@@ -125,8 +127,13 @@ class Progress(Widget):
 if __name__ == "__main__":
     p1=Progress(32,10,10,150,32,min_value=13,max_value=2109)
     p2=Progress(0.3,10,70,150,40)
-    p3=Progress(0.65,10,130,150,35)
-    p4=Progress(0.99,10,190,150,50)
+    config=Config.widgets()
+    config.progress_style=0
+    config.progress_tooltip=0
+    p3=Progress(0.65,10,130,150,1,config=config)
+    config=Config.widgets()
+    config.progress_style=1
+    p4=Progress(0.99,10,190,150,50,config=config)
     from widgets import Widgets
     scr = pygame.display.set_mode((300,600))
     scr.fill(Config.default_drawing_conf.bckg_color)

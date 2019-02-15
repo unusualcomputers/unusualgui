@@ -51,6 +51,8 @@ class Config:
 
     # Drawing config
     default_drawing_conf=DrawingConfig()
+    @classmethod
+    def widgets(cls): return cls.default_drawing_conf.copy()
 
     # MouseDown with no MouseUp and when motion is less then mouse_long_distance
     #   is MouseLong

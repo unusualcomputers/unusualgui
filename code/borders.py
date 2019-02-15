@@ -257,34 +257,20 @@ class Borders:
     def _rect_partial(self,surface,rect,color_border,color_fill,color_bckg,
             p,thickness=1):
         rect=pygame.Rect(rect)
-        if thickness==0:
-            left=pygame.Rect(
-                rect.left,
-                rect.top,
-                int(rect.width*p),
-                rect.height)
-            surface.fill(color_fill,left)
-            right=pygame.Rect(
-                int(rect.width*p)-1,
-                rect.top,
-                rect.width-int(rect.width*p),
-                rect.height)
-            surface.fill(color_bckg,right)
-            if p<1.:
-                right=pygame.Rect(
-                    int(rect.width*p)+1,
-                    rect.top,
-                    rect.width-int(rect.width*p),
-                    rect.height)
-                surface.fill(color_border,right)
-        else:    
-            inner=pygame.Rect(
-                rect.left+thickness,
-                rect.top+thickness,
-                int((rect.width-2*thickness)*p),
-                rect.height-2*thickness)
-            pygame.draw.rect(surface,color_border,rect,thickness)
-            surface.fill(color_fill,inner)
+        inner_left=pygame.Rect(
+            rect.left+thickness,
+            rect.top+thickness,
+            int((rect.width-2*thickness)*p),
+            rect.height-2*thickness)
+        
+        inner_right=pygame.Rect(
+            inner_left.right,
+            inner_left.top,
+            rect.width-2*thickness-inner_left.width,
+            inner_left.height)
+        pygame.draw.rect(surface,color_border,rect,thickness)
+        surface.fill(color_fill,inner_left)
+        surface.fill(color_bckg,inner_right)
 
     def draw_partial(self,surface,rect,color_border,color_fill,color_bckg,
         p,rounded=False,thickness=1):
