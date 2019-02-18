@@ -137,13 +137,13 @@ class Progress(Widget):
 if __name__ == "__main__":
     p1=Progress(32,10,10,150,32,min_value=13,max_value=2109)
     p2=Progress(0.3,10,70,150,40)
-    config=Config.widgets()
-    config.progress_style='thin'
-    config.progress_tooltip=0
-    p3=Progress(0.65,10,130,150,1,config=config)
-    config=Config.widgets()
-    config.progress_style='rect'
-    p4=Progress(0.99,10,190,150,50,config=config)
+    p3=Progress(0.65,10,130,150,10)
+    p3.configuration.progress_style='thin'
+    p3.configuration.progress_tooltip=0
+    p3.init()
+    p4=Progress(0.99,10,190,150,50)
+    p4.configuration.progress_style='rect'
+    p4.init()
     from widgets import Widgets
     scr = pygame.display.set_mode((300,600))
     scr.fill(Config.default_drawing_conf.bckg_color)
