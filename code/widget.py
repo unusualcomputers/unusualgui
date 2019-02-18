@@ -12,7 +12,7 @@ class Widget(object):
         self.height=height
         self.width=width
         self.rect=pygame.Rect(x,y,width,height)
-        self.config=config       
+        self._config=config       
  
         padding=config.padding
         self.inner_rect=self.rect.inflate(-2*padding,-2*padding)
@@ -24,6 +24,19 @@ class Widget(object):
         self.fonts=Fonts()
         from widgets import Widgets
         self.__widgets=Widgets()
+
+    def init(self):
+        return self
+
+    @property
+    def configuration(self):
+        if self._config==Config.default_drawing_conf:
+            self._config=self._config.copy()
+        return self._config
+
+    @configuration.setter
+    def configuration(self,c):
+        self._config=c
 
     # Returns a widget that contains point (x,y), if any
     def contains(self,x,y):
@@ -57,7 +70,7 @@ class Widget(object):
         return self.rect
     
     def _draw_border(self,surface):
-        config=self.config
+        config=self._config
         self.borders.draw(surface,self.rect,
             config.border_radius,config.border_thickness,
             config.border_color,config.border_fill_color)

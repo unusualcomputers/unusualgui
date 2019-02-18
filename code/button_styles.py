@@ -8,8 +8,12 @@ class ButtonStyle:
     class Default:
         def __init__(self,button,text):
             self.button=button
+            self.init(text)
+
+        def init(self,text):
+            button=self.button
             self.borders=button.borders
-            self.config=button.config
+            self.config=button._config
      
             font=button.fonts.get_font(self.config.font_name,
                 self.config.font_size)
@@ -26,7 +30,8 @@ class ButtonStyle:
                 self.config.sel_font_color,self.config.sel_border_fill_color)
             self.clicked_img=font.render(text,self.config.clicked_font_color,
                 self.config.clicked_border_fill_color)
-        
+            return self       
+ 
         def _draw_clicked(self,surface):
             self._draw_border(surface)
             surface.blit(self.clicked_img,self.pos)
@@ -61,8 +66,12 @@ class ButtonStyle:
     class Text:
         def __init__(self,button,text):
             self.button=button
+            self.init(text)
+
+        def init(self,text):
+            button=self.button
             self.borders=button.borders
-            config=button.config
+            config=button._config
      
             font=button.fonts.get_font(config.font_name,config.font_size)
             (w,h)=font.size(text)
@@ -99,7 +108,11 @@ class ButtonStyle:
     class Borderless:
         def __init__(self,button,text):
             self.button=button
-            config=button.config
+            self.init(text)
+
+        def init(self,text):
+            button=self.button
+            config=button._config
      
             font=button.fonts.get_font(config.font_name,config.font_size)
             (w,h)=font.size(text)

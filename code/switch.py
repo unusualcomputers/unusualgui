@@ -23,8 +23,14 @@ class Switch(Widget):
         self.__on=on
         self.text=text
         self.__change_func=change_func
+        self.init()
 
+    def init(self):
+        config=self._config
+        text=self.text
         font=self.fonts.get_font(config.font_name,config.font_size)
+        font_sel=self.fonts.get_font(config.font_name,config.font_size,
+            underline=True)
         (w,h)=font.size(text)
         inner=self.inner_rect
         
@@ -40,9 +46,10 @@ class Switch(Widget):
                 u'required: '+str((w,h))+u' available: '+\
                 str((inner.width-self.__brect.widtht,inner.height)))
         
-        self.text_pos=(inner.x,#+(inner.width-w)/2.0,
-            inner.y+(inner.height-h)/2.0) 
+        self.text_pos=(inner.x,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,config.font_color,config.bckg_color)
+        self.img_sel=font_sel.render(text,config.font_color,config.bckg_color)
+        return self
 
     def set(self, onOff=True):
         self.__on=onOff
@@ -54,9 +61,12 @@ class Switch(Widget):
     # Draw thyself
     # Return updated rectangle if there was an update, None otherwise
     def update(self,surface):
-        surface.blit(self.img,self.text_pos)
+        if self.has_focus:
+            surface.blit(self.img_sel,self.text_pos)
+        else:
+            surface.blit(self.img,self.text_pos)
         
-        config=self.config
+        config=self._config
         fill=None
         bord=None
         if self.__on:

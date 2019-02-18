@@ -27,8 +27,12 @@ class DrawingConfig:
         self.clicked_border_fill_color=(128,0,128)
         self.clicked_border_color=self.clicked_font_color
 
-        self.progress_style=2 # 0-thin line,1-rectangular,else-rounded
-        self.progress_tooltip=1 # 0-none,1-inside,2-floating
+        # label
+        self.label_align='left' # left,center,right
+
+        # progress
+        self.progress_style='round' # thin,rect,round
+        self.progress_tooltip='inside' # none,inside,floating
         self.progress_tooltip_font_sz=self.font_size
         self.progress_tooltip_alpha=128
         self.progress_tooltip_font_color=self.font_color

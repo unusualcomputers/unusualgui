@@ -48,6 +48,11 @@ class Button(Widget):
         self.clicked_func=clicked_func
         self.unclicked_func=unclicked_func
         self.__widgets=Widgets()
+        self.init()
+    
+    def init(self):
+        self.style.init(self.text)
+        return self
 
     def _set_clicked(self,clicked):
         if clicked!=self.is_clicked:
@@ -105,8 +110,9 @@ if __name__ == "__main__":
 
     b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test)
     c2=Config.default_drawing_conf.with_rect_border()
-    b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,config=c2,
+    b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,
         style=ButtonStyle.Borderless)
+    b2.configuration = b2.configuration.with_rect_border()
     b3=OnOffButton(u'Button Three',10,130,150,35,clicked_test,unclicked_test)
     b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
         style=ButtonStyle.Text)
