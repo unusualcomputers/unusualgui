@@ -14,6 +14,7 @@ class Label(Widget):
         self.__set_text(text)
 
     def init(self):
+        Widget.init(self)
         self.__set_text(self.__text)
         
     def __set_text(self,text):

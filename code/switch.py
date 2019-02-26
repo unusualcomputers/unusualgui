@@ -10,22 +10,49 @@ def _default_change_func(onOff,text):
     pass
     #print text + " is switched to " + str(onOff)
 
+class radio_func:
+    def __init__(self,my_text):
+        self.my_text=my_text
+    def set(self,switches):
+        self.others=[s for s in switches if s.text!=self.my_text]
+    def __call__(self,o,text):
+        for s in self.others: s.set(False)
+    
+
+def create_radio(options,default,x,y,width,height,
+    config=Config.default_drawing_conf):
+    radio=[]
+    h=height/float(len(options))
+    i=0
+    fs=[]
+    for o in options:
+        f=radio_func(o)    
+        s=Switch(o,o==default,x,y+i*h,width,h,f,config,True)
+        fs.append(f)
+        radio.append(s)        
+        i+=1
+    for f in fs: f.set(radio)
+    return radio
+
 class Switch(Widget):
     def __init__(self,
             text,
             on,
             x,y,width,height,
             change_func=_default_change_func,
-            config=Config.default_drawing_conf):
+            config=Config.default_drawing_conf,
+            in_radio=False):
         
         Widget.__init__(self,x,y,width,height,config)
         self.__widgets=Widgets()
         self.__on=on
         self.text=text
+        self.in_radio=in_radio
         self.__change_func=change_func
         self.init()
 
     def init(self):
+        Widget.init(self)
         config=self._config
         text=self.text
         font=self.fonts.get_font(config.font_name,config.font_size)
@@ -44,7 +71,7 @@ class Switch(Widget):
         if w > (inner.width-self.__brect.width) or h > inner.height:
             raise Exception(u'Box too small for label "'+text+'"'+\
                 u'required: '+str((w,h))+u' available: '+\
-                str((inner.width-self.__brect.widtht,inner.height)))
+                str((inner.width-self.__brect.width,inner.height)))
         
         self.text_pos=(inner.x,inner.y+(inner.height-h)/2.0) 
         self.img=font.render(text,config.font_color,config.bckg_color)
@@ -93,8 +120,13 @@ class Switch(Widget):
                 (isinstance(event,KeyDown) and event.key==pygame.K_SPACE): 
             self.__widgets.request_focus(self)
             self.needs_update=True
-            self.__on=not self.__on
-            self.__change_func(self.__on,self.text)   
+            if self.in_radio:
+                if not self.__on:
+                    self.__on=True
+                    self.__change_func(self.__on,self.text)   
+            else:    
+                self.__on=not self.__on
+                self.__change_func(self.__on,self.text)   
             return True
         else:
             return False
@@ -111,4 +143,10 @@ if __name__ == "__main__":
     scr.fill(Config.default_drawing_conf.bckg_color)
     widgets=Widgets();
     widgets.add((l1,l2,l3,l4))
+    radio=create_radio(['one','TWO','Three','4'],'TWO',
+        x=10,y=250,width=250,height=160,
+        config=Config.default_drawing_conf)
+    widgets.add(radio)    
+
+
     widgets.run(scr)      

@@ -45,6 +45,7 @@ class Progress(Widget):
         self.init()
 
     def init(self):
+        Widget.init(self)
         config=self._config
         self.__tooltip_style=config.progress_tooltip
         if self.__tooltip_style!='thin':

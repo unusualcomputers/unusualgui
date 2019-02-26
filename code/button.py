@@ -51,6 +51,7 @@ class Button(Widget):
         self.init()
     
     def init(self):
+        Widget.init(self)
         self.style.init(self.text)
         return self
 

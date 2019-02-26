@@ -11,12 +11,8 @@ class Widget(object):
         self.y=y
         self.height=height
         self.width=width
-        self.rect=pygame.Rect(x,y,width,height)
         self._config=config       
  
-        padding=config.padding
-        self.inner_rect=self.rect.inflate(-2*padding,-2*padding)
-        
         self.has_focus=False
         self.needs_update=True
         
@@ -24,8 +20,15 @@ class Widget(object):
         self.fonts=Fonts()
         from widgets import Widgets
         self.__widgets=Widgets()
+        Widget.init(self)
+
+    def init_rects(self):
+        self.rect=pygame.Rect(self.x,self.y,self.width,self.height)
+        padding=self._config.padding
+        self.inner_rect=self.rect.inflate(-2*padding,-2*padding)
 
     def init(self):
+        self.init_rects()
         return self
 
     @property
