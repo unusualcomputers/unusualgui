@@ -49,10 +49,13 @@ class Widgets:
         l=len(widgets)
         if l==0: return
         self.__active=self.__get_tab(name)
-        self.__active+=widgets
         for w in widgets:
-            self.__focus_queue+=w.focus_queue()
-        
+            self.__active+=w.message_receivers()
+            fq=w.focus_queue()
+            for f in fq:
+                if f not in self.__focus_queue:
+                    self.__focus_queue.append(f)
+
     def __get_tab(self,name="main"):
         if name not in self.__tabs: 
             self.__tabs[name]=[]
@@ -87,7 +90,10 @@ class Widgets:
         self.focused().unfocus()
         self.__focus_queue=[]
         for w in self.__active:
-            self.__focus_queue+=w.focus_queue()
+            fq=w.focus_queue()
+            for f in fq:
+                if f not in self.__focus_queue:
+                    self.__focus_queue.append(f)
 
         self.__set_focus(0)
         self.__draw()

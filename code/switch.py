@@ -3,36 +3,11 @@ import init
 from gui_config import Config
 from events import *
 from widget import Widget
-from widgets import Widgets
 from borders import *
 
 def _default_change_func(onOff,text):
     pass
     #print text + " is switched to " + str(onOff)
-
-class radio_func:
-    def __init__(self,my_text):
-        self.my_text=my_text
-    def set(self,switches):
-        self.others=[s for s in switches if s.text!=self.my_text]
-    def __call__(self,o,text):
-        for s in self.others: s.set(False)
-    
-
-def create_radio(options,default,x,y,width,height,
-    config=Config.default_drawing_conf):
-    radio=[]
-    h=height/float(len(options))
-    i=0
-    fs=[]
-    for o in options:
-        f=radio_func(o)    
-        s=Switch(o,o==default,x,y+i*h,width,h,f,config,True)
-        fs.append(f)
-        radio.append(s)        
-        i+=1
-    for f in fs: f.set(radio)
-    return radio
 
 class Switch(Widget):
     def __init__(self,
@@ -44,7 +19,6 @@ class Switch(Widget):
             in_radio=False):
         
         Widget.__init__(self,x,y,width,height,config)
-        self.__widgets=Widgets()
         self.__on=on
         self.text=text
         self.in_radio=in_radio
@@ -118,7 +92,7 @@ class Switch(Widget):
         Widget.handle(self,event)
         if isinstance(event,MouseDown) or \
                 (isinstance(event,KeyDown) and event.key==pygame.K_SPACE): 
-            self.__widgets.request_focus(self)
+            self.widgets.request_focus(self)
             self.needs_update=True
             if self.in_radio:
                 if not self.__on:
@@ -134,19 +108,13 @@ class Switch(Widget):
 
 if __name__ == "__main__":
 
-    l1=Switch(u'Label One',True,10,10,250,32)
+    l1=Switch(u'Label One',True,10,10,250,42)
     l2=Switch(u'button two',False,10,70,250,40)
-    l3=Switch(u'Button Three',False,10,130,250,35)
+    l3=Switch(u'Button Three',False,10,130,250,45)
     l4=Switch(u'Button Four',False,10,190,250,50)
     from widgets import Widgets
     scr = pygame.display.set_mode((300,600))
     scr.fill(Config.default_drawing_conf.bckg_color)
     widgets=Widgets();
     widgets.add((l1,l2,l3,l4))
-    radio=create_radio(['one','TWO','Three','4'],'TWO',
-        x=10,y=250,width=250,height=160,
-        config=Config.default_drawing_conf)
-    widgets.add(radio)    
-
-
     widgets.run(scr)      

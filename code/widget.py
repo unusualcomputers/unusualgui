@@ -19,7 +19,7 @@ class Widget(object):
         self.borders=Borders()
         self.fonts=Fonts()
         from widgets import Widgets
-        self.__widgets=Widgets()
+        self.widgets=Widgets()
         Widget.init(self)
 
     def init_rects(self):
@@ -49,6 +49,11 @@ class Widget(object):
     # This is for widgets that contain other widgets.
     # They can override this and add their sub-widgets to the focus queue.
     def focus_queue(self):
+        return [self]
+
+    # This is for widgets that contain other widgets.
+    # They can override this and add their subwidgets to the message queue.
+    def message_receivers(self):
         return [self]
  
     # Start receiving input
@@ -86,6 +91,6 @@ class Widget(object):
     # If some other widget handled it already 'handled' is True
     def handle(self, event, handled=False):
         if isinstance(event,MouseDown): 
-            self.__widgets.request_focus(self)
+            self.widgets.request_focus(self)
         return False
 

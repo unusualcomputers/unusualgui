@@ -16,7 +16,7 @@ class DrawingConfig:
         self.border_thickness=1
         
         # padding
-        self.padding=self.border_thickness
+        self.padding=self.border_radius
         
         # selection settings
         self.sel_font=self.font_name

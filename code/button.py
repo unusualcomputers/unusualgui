@@ -47,7 +47,6 @@ class Button(Widget):
         self.is_clicked=False
         self.clicked_func=clicked_func
         self.unclicked_func=unclicked_func
-        self.__widgets=Widgets()
         self.init()
     
     def init(self):
@@ -81,7 +80,7 @@ class Button(Widget):
         Widget.handle(self,event)
         if isinstance(event,MouseDown) or \
                 (isinstance(event,KeyDown) and event.key==pygame.K_SPACE): 
-            self.__widgets.request_focus(self)
+            self.widgets.request_focus(self)
             self.needs_update=True
             self.behaviour.on_mouse_down()
             return True
