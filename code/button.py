@@ -4,7 +4,6 @@ from gui_config import Config
 from borders import *
 from events import *
 from widget import Widget
-from widgets import Widgets
 from button_styles import ButtonStyle
 
 # Behaviour for simple button
@@ -108,13 +107,13 @@ if __name__ == "__main__":
     def clicked_test(text): print text + u' clicked'
     def unclicked_test(text): print text + u' unclicked'
 
-    b1=Button(u'Button One',10,10,150,32,clicked_test,unclicked_test)
+    b1=Button(u'Button One',10,10,150,40,clicked_test,unclicked_test)
     c2=Config.default_drawing_conf.with_rect_border()
     b2=Button(u'button two',10,70,150,40,clicked_test,unclicked_test,
         style=ButtonStyle.Borderless)
     b2.configuration = b2.configuration.with_rect_border()
     b2.init()
-    b3=OnOffButton(u'Button Three',10,130,150,35,clicked_test,unclicked_test)
+    b3=OnOffButton(u'Button Three',10,130,150,45,clicked_test,unclicked_test)
     b4=Button(u'Button Four',10,190,150,50,clicked_test,unclicked_test,
         style=ButtonStyle.Text)
     from widgets import Widgets
@@ -123,9 +122,3 @@ if __name__ == "__main__":
     widgets=Widgets();
     widgets.add((b1,b2,b3,b4))
     widgets.run(scr)      
-    #b1.draw(scr)
-    #b2.draw(scr)
-    #b3.draw(scr)
-    #b4.draw(scr)
-    #pygame.display.update()
-    #while pygame.event.wait().type != pg.QUIT: pass

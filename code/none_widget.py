@@ -1,6 +1,5 @@
 import pygame
 import init
-from singleton import Singleton
 from widget import Widget
 
 class NoneWidget(Widget):

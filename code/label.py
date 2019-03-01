@@ -1,7 +1,6 @@
 import pygame
 import init
 from gui_config import Config
-from events import *
 from widget import Widget
 
 class Label(Widget):
@@ -72,11 +71,11 @@ class Label(Widget):
 
 if __name__ == "__main__":
 
-    l1=Label(u'Label One',10,10,150,32)
+    l1=Label(u'Label One',10,10,150,42)
     l1.configuration.label_align='right'
     l1.init()
     l2=Label(u'label two',10,70,150,40)
-    l3=Label(u'label Three',10,130,150,35)
+    l3=Label(u'label Three',10,130,150,45)
     l3.configuration.label_align='center'
     l3.init()
     l4=Label(u'label Four',10,190,150,50)

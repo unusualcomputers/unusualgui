@@ -1,7 +1,6 @@
 import pygame
 import init
 from gui_config import Config
-from events import *
 from widget import Widget
 from borders import *
 

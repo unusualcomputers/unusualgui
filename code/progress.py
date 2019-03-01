@@ -136,7 +136,7 @@ class Progress(Widget):
         return False 
 
 if __name__ == "__main__":
-    p1=Progress(32,10,10,150,32,min_value=13,max_value=2109)
+    p1=Progress(32,10,10,150,42,min_value=13,max_value=2109)
     p2=Progress(0.3,10,70,150,40)
     p3=Progress(0.65,10,130,150,10)
     p3.configuration.progress_style='thin'

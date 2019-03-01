@@ -1,8 +1,6 @@
 import pygame
-from enum import Enum
 from singleton import Singleton
 import init
-from gui_config import Config
 
 class Borders:
     __metaclass__=Singleton
@@ -289,6 +287,7 @@ if __name__ == "__main__":
     r3=pygame.Rect(10,130,250,35)
     r4=pygame.Rect(10,190,250,50)
     from widgets import Widgets
+    from gui_config import Config
     scr = pygame.display.set_mode((300,600))
     conf=Config.default_drawing_conf
     scr.fill(conf.bckg_color)
