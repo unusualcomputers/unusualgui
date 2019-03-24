@@ -11,7 +11,7 @@ class DrawingConfig:
 
         # borders
         self.border_color=self.font_color
-        self.border_fill_color=(255,255,255)#self.bckg_color
+        self.border_fill_color=self.bckg_color
         self.border_radius=5
         self.border_thickness=1
         
@@ -20,9 +20,9 @@ class DrawingConfig:
         
         # selection settings
         self.sel_font=self.font_name
-        self.sel_font_color=self.font_color#(255,160,0)
-        self.sel_border_fill_color=(16,16,16)#self.border_fill_color#(16,16,16)
-        self.sel_border_color=(255,200,0)#self.sel_font_color
+        self.sel_font_color=self.font_color
+        self.sel_border_fill_color=self.border_fill_color
+        self.sel_border_color=self.sel_font_color
         self.clicked_font_color=(255,100,0)
         self.clicked_border_fill_color=(128,0,128)
         self.clicked_border_color=self.clicked_font_color
@@ -36,6 +36,14 @@ class DrawingConfig:
         self.progress_tooltip_font_sz=self.font_size
         self.progress_tooltip_alpha=128
         self.progress_tooltip_font_color=self.font_color
+
+        # graphics
+        self.trig_button_side=10
+        self.trig_button_ratio=2
+        
+        self.trig_button_border_color=(128,0,128)#self.border_color
+        self.trig_button_empty_color=self.bckg_color
+        self.trig_button_fill_color=self.clicked_border_fill_color
 
     def copy(self):
         return copy.deepcopy(self)
