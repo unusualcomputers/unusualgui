@@ -1,1 +1,1 @@
-# unusualgui
+#  unusualgui - gui for unusual computers
