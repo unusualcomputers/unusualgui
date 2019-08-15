@@ -3,6 +3,25 @@ import init
 from gui_config import Config
 from widget import Widget
 from borders import *
+from graphics import Graphics
+
+class ScrollButton(object):
+    def __init__(self,config,rect,up=True):
+        self.config=config
+        self.rect=rect
+        
+        self.height=2*(config.padding+config.trig_button_radius)
+        self.x=(rect.width-2*config.trig_button_radius)/2
+        if up:
+            self.arrow_func=Graphics.up
+            self.y=rect.top+config.padding
+        else:
+            self.arrow_func=Graphics.down
+            self.y=rect.bottom-self.height+config.padding
+
+    def draw_arrow(self,surface,filled=False):
+        arrow=arrow_func(self.config,surface,filled)
+        suface.blit(arrow,(self.x,self.y))    
 
 class VFrame(Widget):
     def __init__(self,children,x,y,width,height,with_scrolling=False,
@@ -26,6 +45,13 @@ class VFrame(Widget):
                 c.height=h
                 c.init()
                 i+=1
+        if self.__with_scrolling:
+            self.children=[ScrollingWidget(c) for c in self.children]
+            if len(self.children)>0: self.first_visible=0
+            else:self.first_visible=-1
+            self.__up=ScrollButton(self.config,self.rect,True)
+            self.__down=ScrollButton(self.config.self.rect,False)
+         
         return self
 
     # Returns a widget that contains point (x,y), if any
@@ -65,13 +91,13 @@ class VFrame(Widget):
             config.border_radius,config.border_thickness,
             config.border_color,config.bckg_color)
     
-    def draw(self,screen):
-        self.update(screen)
+    def draw(self,surface):
+        self.update(surface)
         self.needs_update=False
 
     # Handle event, return True if handled
     # If some other widget handled it already 'handled' is True
     def handle(self, event, handled=False):
-        for c in self.chldren:
+        for c in self.children:
             if s.handle(event,handled): return True
         return False

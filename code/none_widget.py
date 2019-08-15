@@ -14,10 +14,10 @@ class NoneWidget(Widget):
     def update(self,surface):
         return self.rect
     
-    def draw(self,screen):
+    def draw(self,surface):
         pass
 
-    def undraw(self,screen):
+    def undraw(self,surface):
         pass
 
     # Handle event, return True if handled

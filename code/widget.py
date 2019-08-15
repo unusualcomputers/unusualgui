@@ -83,8 +83,8 @@ class Widget(object):
             config.border_radius,config.border_thickness,
             config.border_color,config.border_fill_color)
     
-    def draw(self,screen):
-        self.update(screen)
+    def draw(self,surface):
+        self.update(surface)
         self.needs_update=False
 
     # Handle event, return True if handled

@@ -20,7 +20,7 @@ class DrawingConfig:
         
         # selection settings
         self.sel_font=self.font_name
-        self.sel_font_color=self.font_color
+        self.sel_font_color=(255,160,0)#self.font_color
         self.sel_border_fill_color=self.border_fill_color
         self.sel_border_color=self.sel_font_color
         self.clicked_font_color=(255,100,0)
@@ -38,7 +38,7 @@ class DrawingConfig:
         self.progress_tooltip_font_color=self.font_color
 
         # graphics
-        self.trig_button_side=10
+        self.trig_button_radius=10
         self.trig_button_ratio=2
         
         self.trig_button_border_color=(128,0,128)#self.border_color

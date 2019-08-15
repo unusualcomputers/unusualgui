@@ -76,7 +76,7 @@ class Graphics:
         return (points,inner_points)
     
     def __trig(self,config,screen,filled,points_f, cache):
-        (r,q,colb)=(config.trig_button_side, 
+        (r,q,colb)=(config.trig_button_radius, 
             config.trig_button_ratio,
             config.trig_button_border_color)
       
@@ -135,7 +135,7 @@ if __name__ == "__main__":
     b7=g.right(conf,scr)
     b8=g.right(conf,scr,True)
    
-    a=conf.trig_button_side
+    a=conf.trig_button_radius
     scr.blit(b1,(a,a))
     scr.blit(b2,(a,4*a))
     scr.blit(b3,(a,8*a)) 
@@ -146,19 +146,24 @@ if __name__ == "__main__":
     scr.blit(b8,(4*a,12*a))
     
     conf=conf.copy()
-    conf.trig_button_side=20
+    conf.trig_button_radius=20
+    print 20
     b11=g.up(conf,scr)
+    print b11.get_height()
     b12=g.up(conf,scr,True)
     b13=g.down(conf,scr)
+    print b12.get_height()
     b14=g.down(conf,scr,True)
 
     b15=g.left(conf,scr)
+    print b15.get_height()
     b16=g.left(conf,scr,True)
     b17=g.right(conf,scr)
+    print b17.get_height()
     b18=g.right(conf,scr,True)
    
     o=100
-    a=conf.trig_button_side
+    a=conf.trig_button_radius
     scr.blit(b11,(o+a,a))
     scr.blit(b12,(o+a,4*a))
     scr.blit(b13,(o+a,8*a)) 
@@ -170,7 +175,7 @@ if __name__ == "__main__":
     
 
     conf=conf.copy()
-    conf.trig_button_side=5
+    conf.trig_button_radius=5
     b11=g.up(conf,scr)
     b12=g.up(conf,scr,True)
     b13=g.down(conf,scr)
@@ -182,7 +187,7 @@ if __name__ == "__main__":
     b18=g.right(conf,scr,True)
    
     o=250
-    a=conf.trig_button_side
+    a=conf.trig_button_radius
     scr.blit(b11,(o+a,a))
     scr.blit(b12,(o+a,4*a))
     scr.blit(b13,(o+a,8*a)) 
