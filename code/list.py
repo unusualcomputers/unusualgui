@@ -2,12 +2,12 @@ import init
 from gui_config import Config
 from fonts import Fonts
 
-fonts=Fonts()
 
 class ListItem(Object):
-    def __init__(self,text,config=Config.default_drawing_conf):
+    def __init__(self,text,data=None,config=Config.default_drawing_conf):
         self.text=text
-        font=fonts.get_font(config.font_name,config.font_size)
+        self.data=data
+        font=Fonts().get_font(config.font_name,config.font_size)
         (self.w,self.h)=font.size(text)
         #TODO: eventually we will need folding of text here
         self.img=font.render(text,config.font_color,config.bckg_color)

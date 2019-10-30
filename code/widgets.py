@@ -19,12 +19,6 @@ class Widgets:
         self.__message_loop=MessageLoop(self)
         self.__screen=None
         self.__config=None
-    
-    def focused(self):
-        if self.__focus_idx==-1:
-            return NoneWidget()
-        else:
-            return self.__focus_queue[self.__focus_idx]
 
     def run(self,screen,config=Config.default_drawing_conf):
         if self.__screen or self.__config:
@@ -129,6 +123,12 @@ class Widgets:
     def broadcast(self,message):
         for w in self.__active:
             if w!=message.sender: w.handle(message)
+    
+    def focused(self):
+        if self.__focus_idx==-1:
+            return NoneWidget()
+        else:
+            return self.__focus_queue[self.__focus_idx]
 
     def __set_focus(self,i):
         if not self.__focus_queue:

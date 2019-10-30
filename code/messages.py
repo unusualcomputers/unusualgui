@@ -34,6 +34,7 @@ class MessageLoop:
     def __init__(self,widgets):
         self.__queue = deque()
         self.__widgets=widgets
+        self.__clock = pygame.time.Clock()
         # mouse
         self.mouse_down_time=None
         self.mouse_down_pos=None
@@ -128,6 +129,8 @@ class MessageLoop:
         queue=self.__queue
         check_timers=self.__check_timers
         translate=self.__translate
+        clock=self.__clock
+        fps=self.__fps
         while True:
             empty=len(queue)==0
             if not empty:
@@ -145,7 +148,7 @@ class MessageLoop:
                     queue.append(message)
 
             check_timers()
-
+            clock.tick(fps)
 
 if __name__ == "__main__":
     while True:

@@ -63,8 +63,13 @@ class Config:
 
     # Drawing config
     default_drawing_conf=DrawingConfig()
+
     @classmethod
     def widgets(cls): return cls.default_drawing_conf.copy()
+
+    # fps is maximum number of frames per second in pygame
+    # basically determines how often the message loop is run per second
+    fps=40
 
     # MouseDown with no MouseUp and when motion is less then mouse_long_distance
     #   is MouseLong
